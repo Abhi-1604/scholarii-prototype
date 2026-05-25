@@ -13,6 +13,14 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppTimetableRouteImport } from './routes/app.timetable'
+import { Route as AppTeachersRouteImport } from './routes/app.teachers'
+import { Route as AppStudentsRouteImport } from './routes/app.students'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppFeesRouteImport } from './routes/app.fees'
+import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
+import { Route as AppAssignmentsRouteImport } from './routes/app.assignments'
+import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -34,16 +42,72 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppTimetableRoute = AppTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTeachersRoute = AppTeachersRouteImport.update({
+  id: '/teachers',
+  path: '/teachers',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppStudentsRoute = AppStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFeesRoute = AppFeesRouteImport.update({
+  id: '/fees',
+  path: '/fees',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAttendanceRoute = AppAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAssignmentsRoute = AppAssignmentsRouteImport.update({
+  id: '/assignments',
+  path: '/assignments',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/assignments': typeof AppAssignmentsRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/fees': typeof AppFeesRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/teachers': typeof AppTeachersRoute
+  '/app/timetable': typeof AppTimetableRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/assignments': typeof AppAssignmentsRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/fees': typeof AppFeesRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/teachers': typeof AppTeachersRoute
+  '/app/timetable': typeof AppTimetableRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +115,58 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/assignments': typeof AppAssignmentsRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/fees': typeof AppFeesRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/teachers': typeof AppTeachersRoute
+  '/app/timetable': typeof AppTimetableRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/login' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/app/announcements'
+    | '/app/assignments'
+    | '/app/attendance'
+    | '/app/fees'
+    | '/app/profile'
+    | '/app/students'
+    | '/app/teachers'
+    | '/app/timetable'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/app'
-  id: '__root__' | '/' | '/app' | '/login' | '/app/'
+  to:
+    | '/'
+    | '/login'
+    | '/app/announcements'
+    | '/app/assignments'
+    | '/app/attendance'
+    | '/app/fees'
+    | '/app/profile'
+    | '/app/students'
+    | '/app/teachers'
+    | '/app/timetable'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/login'
+    | '/app/announcements'
+    | '/app/assignments'
+    | '/app/attendance'
+    | '/app/fees'
+    | '/app/profile'
+    | '/app/students'
+    | '/app/teachers'
+    | '/app/timetable'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -97,14 +205,86 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/timetable': {
+      id: '/app/timetable'
+      path: '/timetable'
+      fullPath: '/app/timetable'
+      preLoaderRoute: typeof AppTimetableRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/teachers': {
+      id: '/app/teachers'
+      path: '/teachers'
+      fullPath: '/app/teachers'
+      preLoaderRoute: typeof AppTeachersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/students': {
+      id: '/app/students'
+      path: '/students'
+      fullPath: '/app/students'
+      preLoaderRoute: typeof AppStudentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/fees': {
+      id: '/app/fees'
+      path: '/fees'
+      fullPath: '/app/fees'
+      preLoaderRoute: typeof AppFeesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/attendance': {
+      id: '/app/attendance'
+      path: '/attendance'
+      fullPath: '/app/attendance'
+      preLoaderRoute: typeof AppAttendanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/assignments': {
+      id: '/app/assignments'
+      path: '/assignments'
+      fullPath: '/app/assignments'
+      preLoaderRoute: typeof AppAssignmentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/announcements': {
+      id: '/app/announcements'
+      path: '/announcements'
+      fullPath: '/app/announcements'
+      preLoaderRoute: typeof AppAnnouncementsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAnnouncementsRoute: typeof AppAnnouncementsRoute
+  AppAssignmentsRoute: typeof AppAssignmentsRoute
+  AppAttendanceRoute: typeof AppAttendanceRoute
+  AppFeesRoute: typeof AppFeesRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppStudentsRoute: typeof AppStudentsRoute
+  AppTeachersRoute: typeof AppTeachersRoute
+  AppTimetableRoute: typeof AppTimetableRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAnnouncementsRoute: AppAnnouncementsRoute,
+  AppAssignmentsRoute: AppAssignmentsRoute,
+  AppAttendanceRoute: AppAttendanceRoute,
+  AppFeesRoute: AppFeesRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppStudentsRoute: AppStudentsRoute,
+  AppTeachersRoute: AppTeachersRoute,
+  AppTimetableRoute: AppTimetableRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
@@ -118,3 +298,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
