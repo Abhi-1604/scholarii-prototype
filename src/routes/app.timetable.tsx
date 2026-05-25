@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Fragment } from "react";
 import { PageHeader } from "@/components/scholarii/AppShell";
 import { Card } from "@/components/ui/card";
 
@@ -18,8 +19,8 @@ function TimetablePage() {
           <div />
           {DAYS.map((d) => <div key={d} className="text-center text-sm font-semibold py-2">{d}</div>)}
           {PERIODS.map((p, pi) => (
-            <>
-              <div key={p} className="text-xs text-muted-foreground py-3 text-right pr-2">{p}</div>
+            <Fragment key={p}>
+              <div className="text-xs text-muted-foreground py-3 text-right pr-2">{p}</div>
               {DAYS.map((d, di) => {
                 const idx = (pi + di) % SUBJECTS.length;
                 return (
@@ -29,7 +30,7 @@ function TimetablePage() {
                   </div>
                 );
               })}
-            </>
+            </Fragment>
           ))}
         </div>
       </Card>
