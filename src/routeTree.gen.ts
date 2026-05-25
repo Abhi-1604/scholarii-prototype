@@ -13,14 +13,27 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppUsersRouteImport } from './routes/app.users'
 import { Route as AppTimetableRouteImport } from './routes/app.timetable'
 import { Route as AppTeachersRouteImport } from './routes/app.teachers'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppReportsRouteImport } from './routes/app.reports'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppMeetingsRouteImport } from './routes/app.meetings'
+import { Route as AppLogsRouteImport } from './routes/app.logs'
+import { Route as AppInfrastructureRouteImport } from './routes/app.infrastructure'
+import { Route as AppGradebookRouteImport } from './routes/app.gradebook'
 import { Route as AppFeesRouteImport } from './routes/app.fees'
+import { Route as AppExamsRouteImport } from './routes/app.exams'
+import { Route as AppEventsRouteImport } from './routes/app.events'
+import { Route as AppCommunicationRouteImport } from './routes/app.communication'
+import { Route as AppClassesRouteImport } from './routes/app.classes'
+import { Route as AppChildrenRouteImport } from './routes/app.children'
 import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
 import { Route as AppAssignmentsRouteImport } from './routes/app.assignments'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
+import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAcademicsRouteImport } from './routes/app.academics'
 
 const LoginRoute = LoginRouteImport.update({
@@ -43,6 +56,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppUsersRoute = AppUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTimetableRoute = AppTimetableRouteImport.update({
   id: '/timetable',
   path: '/timetable',
@@ -58,14 +76,69 @@ const AppStudentsRoute = AppStudentsRouteImport.update({
   path: '/students',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMeetingsRoute = AppMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLogsRoute = AppLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInfrastructureRoute = AppInfrastructureRouteImport.update({
+  id: '/infrastructure',
+  path: '/infrastructure',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGradebookRoute = AppGradebookRouteImport.update({
+  id: '/gradebook',
+  path: '/gradebook',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppFeesRoute = AppFeesRouteImport.update({
   id: '/fees',
   path: '/fees',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppExamsRoute = AppExamsRouteImport.update({
+  id: '/exams',
+  path: '/exams',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEventsRoute = AppEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommunicationRoute = AppCommunicationRouteImport.update({
+  id: '/communication',
+  path: '/communication',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClassesRoute = AppClassesRouteImport.update({
+  id: '/classes',
+  path: '/classes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChildrenRoute = AppChildrenRouteImport.update({
+  id: '/children',
+  path: '/children',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAttendanceRoute = AppAttendanceRouteImport.update({
@@ -83,6 +156,11 @@ const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
   path: '/announcements',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAcademicsRoute = AppAcademicsRouteImport.update({
   id: '/academics',
   path: '/academics',
@@ -94,28 +172,54 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/app/academics': typeof AppAcademicsRoute
+  '/app/analytics': typeof AppAnalyticsRoute
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/assignments': typeof AppAssignmentsRoute
   '/app/attendance': typeof AppAttendanceRoute
+  '/app/children': typeof AppChildrenRoute
+  '/app/classes': typeof AppClassesRoute
+  '/app/communication': typeof AppCommunicationRoute
+  '/app/events': typeof AppEventsRoute
+  '/app/exams': typeof AppExamsRoute
   '/app/fees': typeof AppFeesRoute
+  '/app/gradebook': typeof AppGradebookRoute
+  '/app/infrastructure': typeof AppInfrastructureRoute
+  '/app/logs': typeof AppLogsRoute
+  '/app/meetings': typeof AppMeetingsRoute
   '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app/students': typeof AppStudentsRoute
   '/app/teachers': typeof AppTeachersRoute
   '/app/timetable': typeof AppTimetableRoute
+  '/app/users': typeof AppUsersRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/app/academics': typeof AppAcademicsRoute
+  '/app/analytics': typeof AppAnalyticsRoute
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/assignments': typeof AppAssignmentsRoute
   '/app/attendance': typeof AppAttendanceRoute
+  '/app/children': typeof AppChildrenRoute
+  '/app/classes': typeof AppClassesRoute
+  '/app/communication': typeof AppCommunicationRoute
+  '/app/events': typeof AppEventsRoute
+  '/app/exams': typeof AppExamsRoute
   '/app/fees': typeof AppFeesRoute
+  '/app/gradebook': typeof AppGradebookRoute
+  '/app/infrastructure': typeof AppInfrastructureRoute
+  '/app/logs': typeof AppLogsRoute
+  '/app/meetings': typeof AppMeetingsRoute
   '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app/students': typeof AppStudentsRoute
   '/app/teachers': typeof AppTeachersRoute
   '/app/timetable': typeof AppTimetableRoute
+  '/app/users': typeof AppUsersRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -124,14 +228,27 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/app/academics': typeof AppAcademicsRoute
+  '/app/analytics': typeof AppAnalyticsRoute
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/assignments': typeof AppAssignmentsRoute
   '/app/attendance': typeof AppAttendanceRoute
+  '/app/children': typeof AppChildrenRoute
+  '/app/classes': typeof AppClassesRoute
+  '/app/communication': typeof AppCommunicationRoute
+  '/app/events': typeof AppEventsRoute
+  '/app/exams': typeof AppExamsRoute
   '/app/fees': typeof AppFeesRoute
+  '/app/gradebook': typeof AppGradebookRoute
+  '/app/infrastructure': typeof AppInfrastructureRoute
+  '/app/logs': typeof AppLogsRoute
+  '/app/meetings': typeof AppMeetingsRoute
   '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/settings': typeof AppSettingsRoute
   '/app/students': typeof AppStudentsRoute
   '/app/teachers': typeof AppTeachersRoute
   '/app/timetable': typeof AppTimetableRoute
+  '/app/users': typeof AppUsersRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
@@ -141,28 +258,54 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/app/academics'
+    | '/app/analytics'
     | '/app/announcements'
     | '/app/assignments'
     | '/app/attendance'
+    | '/app/children'
+    | '/app/classes'
+    | '/app/communication'
+    | '/app/events'
+    | '/app/exams'
     | '/app/fees'
+    | '/app/gradebook'
+    | '/app/infrastructure'
+    | '/app/logs'
+    | '/app/meetings'
     | '/app/profile'
+    | '/app/reports'
+    | '/app/settings'
     | '/app/students'
     | '/app/teachers'
     | '/app/timetable'
+    | '/app/users'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/app/academics'
+    | '/app/analytics'
     | '/app/announcements'
     | '/app/assignments'
     | '/app/attendance'
+    | '/app/children'
+    | '/app/classes'
+    | '/app/communication'
+    | '/app/events'
+    | '/app/exams'
     | '/app/fees'
+    | '/app/gradebook'
+    | '/app/infrastructure'
+    | '/app/logs'
+    | '/app/meetings'
     | '/app/profile'
+    | '/app/reports'
+    | '/app/settings'
     | '/app/students'
     | '/app/teachers'
     | '/app/timetable'
+    | '/app/users'
     | '/app'
   id:
     | '__root__'
@@ -170,14 +313,27 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/app/academics'
+    | '/app/analytics'
     | '/app/announcements'
     | '/app/assignments'
     | '/app/attendance'
+    | '/app/children'
+    | '/app/classes'
+    | '/app/communication'
+    | '/app/events'
+    | '/app/exams'
     | '/app/fees'
+    | '/app/gradebook'
+    | '/app/infrastructure'
+    | '/app/logs'
+    | '/app/meetings'
     | '/app/profile'
+    | '/app/reports'
+    | '/app/settings'
     | '/app/students'
     | '/app/teachers'
     | '/app/timetable'
+    | '/app/users'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
@@ -217,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/users': {
+      id: '/app/users'
+      path: '/users'
+      fullPath: '/app/users'
+      preLoaderRoute: typeof AppUsersRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/timetable': {
       id: '/app/timetable'
       path: '/timetable'
@@ -238,6 +401,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/reports': {
+      id: '/app/reports'
+      path: '/reports'
+      fullPath: '/app/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/profile': {
       id: '/app/profile'
       path: '/profile'
@@ -245,11 +422,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/meetings': {
+      id: '/app/meetings'
+      path: '/meetings'
+      fullPath: '/app/meetings'
+      preLoaderRoute: typeof AppMeetingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/logs': {
+      id: '/app/logs'
+      path: '/logs'
+      fullPath: '/app/logs'
+      preLoaderRoute: typeof AppLogsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/infrastructure': {
+      id: '/app/infrastructure'
+      path: '/infrastructure'
+      fullPath: '/app/infrastructure'
+      preLoaderRoute: typeof AppInfrastructureRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/gradebook': {
+      id: '/app/gradebook'
+      path: '/gradebook'
+      fullPath: '/app/gradebook'
+      preLoaderRoute: typeof AppGradebookRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/fees': {
       id: '/app/fees'
       path: '/fees'
       fullPath: '/app/fees'
       preLoaderRoute: typeof AppFeesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/exams': {
+      id: '/app/exams'
+      path: '/exams'
+      fullPath: '/app/exams'
+      preLoaderRoute: typeof AppExamsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/events': {
+      id: '/app/events'
+      path: '/events'
+      fullPath: '/app/events'
+      preLoaderRoute: typeof AppEventsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/communication': {
+      id: '/app/communication'
+      path: '/communication'
+      fullPath: '/app/communication'
+      preLoaderRoute: typeof AppCommunicationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/classes': {
+      id: '/app/classes'
+      path: '/classes'
+      fullPath: '/app/classes'
+      preLoaderRoute: typeof AppClassesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/children': {
+      id: '/app/children'
+      path: '/children'
+      fullPath: '/app/children'
+      preLoaderRoute: typeof AppChildrenRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/attendance': {
@@ -273,6 +513,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnnouncementsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/analytics': {
+      id: '/app/analytics'
+      path: '/analytics'
+      fullPath: '/app/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/academics': {
       id: '/app/academics'
       path: '/academics'
@@ -285,27 +532,53 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAcademicsRoute: typeof AppAcademicsRoute
+  AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
   AppAssignmentsRoute: typeof AppAssignmentsRoute
   AppAttendanceRoute: typeof AppAttendanceRoute
+  AppChildrenRoute: typeof AppChildrenRoute
+  AppClassesRoute: typeof AppClassesRoute
+  AppCommunicationRoute: typeof AppCommunicationRoute
+  AppEventsRoute: typeof AppEventsRoute
+  AppExamsRoute: typeof AppExamsRoute
   AppFeesRoute: typeof AppFeesRoute
+  AppGradebookRoute: typeof AppGradebookRoute
+  AppInfrastructureRoute: typeof AppInfrastructureRoute
+  AppLogsRoute: typeof AppLogsRoute
+  AppMeetingsRoute: typeof AppMeetingsRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppReportsRoute: typeof AppReportsRoute
+  AppSettingsRoute: typeof AppSettingsRoute
   AppStudentsRoute: typeof AppStudentsRoute
   AppTeachersRoute: typeof AppTeachersRoute
   AppTimetableRoute: typeof AppTimetableRoute
+  AppUsersRoute: typeof AppUsersRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAcademicsRoute: AppAcademicsRoute,
+  AppAnalyticsRoute: AppAnalyticsRoute,
   AppAnnouncementsRoute: AppAnnouncementsRoute,
   AppAssignmentsRoute: AppAssignmentsRoute,
   AppAttendanceRoute: AppAttendanceRoute,
+  AppChildrenRoute: AppChildrenRoute,
+  AppClassesRoute: AppClassesRoute,
+  AppCommunicationRoute: AppCommunicationRoute,
+  AppEventsRoute: AppEventsRoute,
+  AppExamsRoute: AppExamsRoute,
   AppFeesRoute: AppFeesRoute,
+  AppGradebookRoute: AppGradebookRoute,
+  AppInfrastructureRoute: AppInfrastructureRoute,
+  AppLogsRoute: AppLogsRoute,
+  AppMeetingsRoute: AppMeetingsRoute,
   AppProfileRoute: AppProfileRoute,
+  AppReportsRoute: AppReportsRoute,
+  AppSettingsRoute: AppSettingsRoute,
   AppStudentsRoute: AppStudentsRoute,
   AppTeachersRoute: AppTeachersRoute,
   AppTimetableRoute: AppTimetableRoute,
+  AppUsersRoute: AppUsersRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
