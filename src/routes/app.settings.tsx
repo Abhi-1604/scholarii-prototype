@@ -15,7 +15,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/app/settings")({ component: SettingsPage });
 
 function SettingsPage() {
-  const { theme, setTheme } = useAuth();
+  const { theme, toggleTheme } = useAuth();
+  const setTheme = (t: "light" | "dark") => { if (t !== theme) toggleTheme(); };
   return (
     <div>
       <PageHeader title="Settings" subtitle="Configure your school and personal preferences." />
