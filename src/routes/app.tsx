@@ -14,18 +14,10 @@ function AppLayout() {
   useEffect(() => {
     if (user !== null) return;
 
-    const redirectToLogin = () => {
-      try {
-        if (!localStorage.getItem("scholarii-user-v1")) {
-          nav({ to: "/login" });
-        }
-      } catch (error) {
-        console.error("Failed to read auth state", error);
-        nav({ to: "/login" });
-      }
-    };
+    const redirectTimer = window.setTimeout(() => {
+      nav({ to: "/login" });
+    }, 50);
 
-    const redirectTimer = window.setTimeout(redirectToLogin, 50);
     return () => window.clearTimeout(redirectTimer);
   }, [user, nav]);
 
@@ -34,6 +26,7 @@ function AppLayout() {
       <div className="min-h-screen grid place-items-center text-muted-foreground">Loading...</div>
     );
   }
+
   return (
     <AppShell>
       <Outlet />
