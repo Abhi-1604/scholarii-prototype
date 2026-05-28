@@ -10,14 +10,33 @@ export const Route = createFileRoute("/app")({
 function AppLayout() {
   const { user } = useAuth();
   const nav = useNavigate();
-  useEffect(() => { if (user === null) {
-    // wait one tick; auth loads from localStorage on mount
-    const t = setTimeout(() => { if (!localStorage.getItem("scholarii-user-v1")) nav({ to: "/login" }); }, 50);
-    return () => clearTimeout(t);
-  } }, [user, nav]);
+
+  useEffect(() => {
+    if (user !== null) return;
+
+    const redirectToLogin = () => {
+      try {
+        if (!localStorage.getItem("scholarii-user-v1")) {
+          nav({ to: "/login" });
+        }
+      } catch (error) {
+        console.error("Failed to read auth state", error);
+        nav({ to: "/login" });
+      }
+    };
+
+    const redirectTimer = window.setTimeout(redirectToLogin, 50);
+    return () => window.clearTimeout(redirectTimer);
+  }, [user, nav]);
 
   if (!user) {
-    return <div className="min-h-screen grid place-items-center text-muted-foreground">Loading...</div>;
+    return (
+      <div className="min-h-screen grid place-items-center text-muted-foreground">Loading...</div>
+    );
   }
-  return <AppShell><Outlet /></AppShell>;
+  return (
+    <AppShell>
+      <Outlet />
+    </AppShell>
+  );
 }
