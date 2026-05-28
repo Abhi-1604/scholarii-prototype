@@ -26,6 +26,31 @@ interface AuthCtx {
 
 const Ctx = createContext<AuthCtx | null>(null);
 
+const safeLocalStorageGet = (key: string) => {
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    console.error(`Failed to read localStorage key ${key}`, error);
+    return null;
+  }
+};
+
+const safeLocalStorageSet = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch (error) {
+    console.error(`Failed to write localStorage key ${key}`, error);
+  }
+};
+
+const safeLocalStorageRemove = (key: string) => {
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {
+    console.error(`Failed to remove localStorage key ${key}`, error);
+  }
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -33,13 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(KEY);
+      const raw = safeLocalStorageGet(KEY);
       if (raw) setUser(JSON.parse(raw));
-      const t = (localStorage.getItem(THEME_KEY) as "light" | "dark") || "light";
+      const t = (safeLocalStorageGet(THEME_KEY) as "light" | "dark") || "light";
       setTheme(t);
       document.documentElement.classList.toggle("dark", t === "dark");
-      setParentModeState(localStorage.getItem(PARENT_MODE_KEY) === "1");
-    } catch {}
+      setParentModeState(safeLocalStorageGet(PARENT_MODE_KEY) === "1");
+    } catch (error) {
+      console.error("Failed to initialize auth state", error);
+    }
   }, []);
 
   const login: AuthCtx["login"] = (email, password, role) => {
@@ -49,14 +76,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { ok: false, error: "Invalid credentials. Use the demo credentials shown." };
     }
     const u: User = { email: demo.email, name: demo.name, role, avatarColor: demo.color };
-    localStorage.setItem(KEY, JSON.stringify(u));
+    safeLocalStorageSet(KEY, JSON.stringify(u));
     setUser(u);
     return { ok: true };
   };
 
   const logout = () => {
-    localStorage.removeItem(KEY);
-    localStorage.removeItem(PARENT_MODE_KEY);
+    safeLocalStorageRemove(KEY);
+    safeLocalStorageRemove(PARENT_MODE_KEY);
     setParentModeState(false);
     setUser(null);
   };
@@ -64,16 +91,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const toggleTheme = () => {
     const next = theme === "light" ? "dark" : "light";
     setTheme(next);
-    localStorage.setItem(THEME_KEY, next);
+    safeLocalStorageSet(THEME_KEY, next);
     document.documentElement.classList.toggle("dark", next === "dark");
   };
 
   const setParentMode = (v: boolean) => {
     setParentModeState(v);
-    localStorage.setItem(PARENT_MODE_KEY, v ? "1" : "0");
+    safeLocalStorageSet(PARENT_MODE_KEY, v ? "1" : "0");
   };
 
-  return <Ctx.Provider value={{ user, login, logout, theme, toggleTheme, parentMode, setParentMode }}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={{ user, login, logout, theme, toggleTheme, parentMode, setParentMode }}>
+      {children}
+    </Ctx.Provider>
+  );
 }
 
 export function useAuth() {
