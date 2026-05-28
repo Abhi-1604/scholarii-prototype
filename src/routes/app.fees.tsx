@@ -17,7 +17,7 @@ export const Route = createFileRoute("/app/fees")({ component: FeesPage });
 
 function FeesPage() {
   const { user } = useAuth();
-  if (user?.role === "student" || user?.role === "parent") return <StudentFeesView />;
+  if (user?.role === "student") return <StudentFeesView />;
   return <AdminFeesView />;
 }
 
