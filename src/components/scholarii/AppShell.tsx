@@ -14,6 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Badge } from "@/components/ui/badge";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import scholariiIconUrl from "../../../Icons/scholarii-icon.png?url";
 
 type NavItem = { to: string; label: string; icon: typeof Home };
 
@@ -85,7 +86,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const SidebarInner = (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-2 px-5 border-b border-sidebar-border">
-        <div className="size-8 rounded-lg bg-brand-gradient grid place-items-center text-white font-bold">S</div>
+        <div className="size-8 rounded-lg bg-card grid place-items-center shadow-soft">
+          <img src={scholariiIconUrl} alt="Scholarii icon" className="size-5" />
+        </div>
         <div>
           <div className="font-semibold text-sidebar-foreground leading-none">Scholarii</div>
           <div className="text-[11px] text-muted-foreground mt-0.5">{ROLE_LABEL[user.role]} Portal</div>

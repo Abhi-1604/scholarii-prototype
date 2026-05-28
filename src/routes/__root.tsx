@@ -13,7 +13,7 @@ function NotFoundComponent() {
         <h1 className="text-7xl font-bold text-brand-gradient">404</h1>
         <h2 className="mt-4 text-xl font-semibold">Page not found</h2>
         <p className="mt-2 text-sm text-muted-foreground">The page you're looking for doesn't exist.</p>
-        <a href="/" className="mt-6 inline-flex items-center rounded-md bg-brand-gradient text-white px-4 py-2 text-sm font-medium">Go home</a>
+        <a href="/login" className="mt-6 inline-flex items-center rounded-md bg-brand-gradient text-white px-4 py-2 text-sm font-medium">Go to login</a>
       </div>
     </div>
   );
@@ -49,7 +49,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Role-based dashboards for principals, teachers, students, admins and parents." },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/Icons/favicon.ico" },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
