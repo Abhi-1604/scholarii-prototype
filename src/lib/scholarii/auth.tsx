@@ -107,8 +107,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// ✅ CHANGED: SSR-safe fallback instead of throwing error
 export function useAuth() {
   const c = useContext(Ctx);
-  if (!c) throw new Error("useAuth must be inside AuthProvider");
+  if (!c) {
+    return {
+      user: null,
+      login: () => ({ ok: false, error: "Not ready" }),
+      logout: () => {},
+      theme: "light" as const,
+      toggleTheme: () => {},
+      parentMode: false,
+      setParentMode: () => {},
+    };
+  }
   return c;
 }
