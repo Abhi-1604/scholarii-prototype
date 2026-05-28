@@ -91,7 +91,6 @@ function LoginPage() {
                   <SelectItem value="teacher">Teacher</SelectItem>
                   <SelectItem value="student">Student</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="parent">Parent</SelectItem>
                 </SelectContent>
               </Select>
             </div>
