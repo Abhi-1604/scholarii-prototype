@@ -1,8 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ComponentProps, type ComponentType, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { useAuth, DEMO_PASSWORD, DEMO_USERS } from "@/lib/scholarii/auth";
@@ -89,22 +90,22 @@ function LoginPage() {
       <div className="absolute right-[-6rem] top-[-4rem] size-[22rem] rounded-full bg-brand-gradient opacity-12 blur-3xl float-slower" />
       <div className="absolute bottom-[-6rem] left-[38%] size-[20rem] rounded-full bg-info/14 blur-3xl float-slow" />
 
-      <div className="relative mx-auto flex h-full w-full max-w-[1500px] items-start px-4 py-4 sm:px-6 lg:px-8 xl:px-10">
-        <div className="grid w-full items-start gap-6 lg:grid-cols-[minmax(0,1.45fr)_540px] xl:gap-8">
-          <section className="hidden lg:flex lg:items-center lg:justify-start lg:pt-4">
+      <div className="relative mx-auto flex h-full w-full max-w-[1500px] items-center px-4 py-0 sm:px-6 lg:px-8 xl:px-10">
+        <div className="grid w-full items-center gap-0 grid-cols-2 xl:gap-0">
+          <section className="flex items-center justify-start h-screen">
             <div className="relative flex max-w-[520px] flex-col items-start text-left">
               <div className="pointer-events-none absolute -left-16 top-12 h-48 w-48 rounded-full bg-brand-gradient opacity-10 blur-3xl" />
               <div className="pointer-events-none absolute left-16 top-32 h-32 w-32 rounded-full bg-info/12 blur-3xl" />
               <div className="relative inline-block">
                 <div className="absolute inset-0 rounded-full bg-brand-gradient opacity-30 blur-2xl pulse-glow" />
-                <img src={scholariiLogoUrl} alt="Scholarii logo" className="relative h-14 w-auto object-contain" />
+                <img src={scholariiLogoUrl} alt="Scholarii logo" className="relative h-24 w-auto object-contain" />
               </div>
 
               <div className="mt-7 flex flex-nowrap gap-2">
                 {featurePills.map((pill) => (
                   <span
                     key={pill}
-                    className="rounded-full border border-white/45 bg-white/48 px-3 py-1.5 text-[9px] font-semibold tracking-[0.15em] text-foreground/70 uppercase shadow-[0_10px_30px_-22px_rgba(40,24,90,0.35)] backdrop-blur-md dark:border-white/10 dark:bg-white/8"
+                    className="rounded-full border border-white/45 bg-white/48 px-4 py-2 text-sm font-semibold tracking-[0.15em] text-foreground/70 uppercase shadow-[0_10px_30px_-22px_rgba(40,24,90,0.35)] backdrop-blur-md dark:border-white/10 dark:bg-white/8"
                   >
                     {pill}
                   </span>
@@ -112,11 +113,11 @@ function LoginPage() {
               </div>
 
               <div className="relative mt-8">
-                <p className="text-xs font-semibold tracking-[0.22em] text-primary uppercase">School Operating System</p>
-                <h1 className="mt-3 max-w-[11ch] font-display text-3xl font-semibold leading-[0.98] tracking-[-0.06em] text-foreground">
+                <p className="text-lg font-semibold tracking-[0.22em] text-primary uppercase">School Operating System</p>
+                <h1 className="mt-3 max-w-[11ch] font-display text-5xl font-semibold leading-[0.98] tracking-[-0.06em] text-foreground">
                   Run your entire school with clarity.
                 </h1>
-                <p className="mt-4 max-w-[34rem] text-sm leading-6 text-muted-foreground/95">
+                <p className="mt-4 max-w-[34rem] text-lg leading-6 text-muted-foreground/95">
                   Scholarii brings operations, communication, attendance, and AI assistance into one workspace.
                 </p>
               </div>
@@ -129,8 +130,8 @@ function LoginPage() {
             </div>
           </section>
 
-          <section className="flex items-start justify-center pt-2 lg:pt-0">
-            <div className="w-full max-w-[620px]">
+          <section className="flex items-center justify-center h-screen">
+            <div className="w-full max-w-[500px]">
               <div className="mb-4 flex justify-center lg:hidden">
                 <div className="relative inline-block">
                   <div className="absolute inset-0 rounded-full bg-brand-gradient opacity-30 blur-2xl pulse-glow" />
@@ -139,9 +140,10 @@ function LoginPage() {
               </div>
 
       {/* Right form */}
-      <div className="flex items-center justify-center p-6 lg:p-12 bg-background">
-        <div className="w-full max-w-md">
-          <Link to="/" className="lg:hidden flex items-center gap-2 mb-8">
+      <Card>
+        <div className="flex items-center justify-center p-3 lg:p-8 bg-background">
+          <div className="w-full max-w-md">
+            <Link to="/" className="lg:hidden flex items-center gap-2 mb-8">
             <div className="size-8 rounded-lg bg-brand-gradient grid place-items-center text-white font-bold">S</div>
             <span className="font-semibold">Scholarii</span>
           </Link>
@@ -227,7 +229,8 @@ function LoginPage() {
                     </div>
                   </div>
                 </div>
-              </Card>
+              </div>
+            </Card>
             </div>
           </section>
         </div>

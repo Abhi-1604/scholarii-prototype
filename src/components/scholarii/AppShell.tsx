@@ -6,6 +6,7 @@ import {
   ClipboardCheck, ClipboardList, GraduationCap, CalendarClock, UserCircle, Building2,
   ShieldCheck, FileText, ScrollText, Calendar, Wallet, MessageSquare, Baby,
   LogOut, Bell, Moon, Sun, Search, Menu, BookMarked, User as StudentIcon, Users as ParentIcon,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Badge } from "@/components/ui/badge";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import scholariiIconUrl from "../../../Icons/scholarii-icon.png?url";
+import scholariiIconUrl from "../../../Icons/apple-touch-icon.png?url";
 
 type NavItem = { to: string; label: string; icon: typeof Home };
 
@@ -80,6 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const nav = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   if (!user) return null;
   const isStudent = user.role === "student";
@@ -90,16 +92,19 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const SidebarInner = (
     <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center gap-2 px-5 border-b border-sidebar-border">
-        <div className="size-8 rounded-lg bg-card grid place-items-center shadow-soft">
-          <img src={scholariiIconUrl} alt="Scholarii icon" className="size-5" />
-        </div>
-        <div>
-          <div className="font-semibold text-sidebar-foreground leading-none">Scholarii</div>
-          <div className="text-[11px] text-muted-foreground mt-0.5 transition-all">{portalLabel} Portal</div>
-        </div>
+      <div className={cn(
+        "flex items-center gap-2 border-b border-sidebar-border transition-all duration-300",
+        sidebarOpen ? "h-16 px-5" : "h-16 px-3 justify-center"
+      )}>
+        <img src={scholariiIconUrl} alt="Scholarii icon" className="size-8 flex-shrink-0" />
+        {sidebarOpen && (
+          <div className="animate-in fade-in">
+            <div className="font-semibold text-sidebar-foreground leading-none">Scholarii</div>
+            <div className="text-[11px] text-muted-foreground mt-0.5 transition-all">{portalLabel} Portal</div>
+          </div>
+        )}
       </div>
-      <nav key={showParent ? "parent" : "self"} className="flex-1 overflow-y-auto p-3 space-y-1 animate-in-up">
+      <nav key={showParent ? "parent" : "self"} className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-1 animate-in-up">
         {items.map((it) => {
           const active = it.to === "/app" ? path === "/app" : path.startsWith(it.to);
           const Icon = it.icon;
@@ -109,14 +114,25 @@ export function AppShell({ children }: { children: ReactNode }) {
               to={it.to}
               onClick={() => setMobileOpen(false)}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all",
+                "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200",
                 active
                   ? "bg-brand-gradient text-white shadow-glow"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                !sidebarOpen && "justify-center"
               )}
+              title={!sidebarOpen ? it.label : ""}
             >
-              <Icon className="size-4" />
-              <span className="font-medium">{it.label}</span>
+              <Icon className="size-4 flex-shrink-0" />
+              {sidebarOpen && (
+                <span className="font-medium">{it.label}</span>
+              )}
+              
+              {/* Hover tooltip for collapsed state */}
+              {!sidebarOpen && (
+                <div className="absolute left-full ml-2 px-3 py-2 bg-sidebar-accent text-sidebar-accent-foreground rounded-lg text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                  {it.label}
+                </div>
+              )}
             </Link>
           );
         })}
@@ -124,10 +140,21 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="p-3 border-t border-sidebar-border">
         <button
           onClick={() => { logout(); nav({ to: "/login" }); }}
-          className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent transition-colors"
+          className={cn(
+            "group relative w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent transition-colors duration-200",
+            !sidebarOpen && "justify-center"
+          )}
+          title={!sidebarOpen ? "Log out" : ""}
         >
-          <LogOut className="size-4" />
-          Log out
+          <LogOut className="size-4 flex-shrink-0" />
+          {sidebarOpen && "Log out"}
+          
+          {/* Hover tooltip for collapsed state */}
+          {!sidebarOpen && (
+            <div className="absolute left-full ml-2 px-3 py-2 bg-sidebar-accent text-sidebar-accent-foreground rounded-lg text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+              Log out
+            </div>
+          )}
         </button>
       </div>
     </div>
@@ -135,14 +162,18 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background flex w-full">
-      <aside className="hidden lg:flex w-64 shrink-0 bg-sidebar border-r border-sidebar-border">
+      {/* Desktop Sidebar */}
+      <aside className={cn(
+        "hidden lg:flex flex-col shrink-0 bg-sidebar border-r border-sidebar-border transition-all duration-300 overflow-hidden",
+        sidebarOpen ? "w-64" : "w-20"
+      )}>
         {SidebarInner}
       </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-sidebar border-r border-sidebar-border animate-in-up">
+          <aside className="absolute left-0 top-0 h-full w-72 bg-sidebar border-r border-sidebar-border animate-in-up overflow-hidden">
             {SidebarInner}
           </aside>
         </div>
@@ -150,8 +181,29 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-30 h-16 flex items-center gap-3 px-4 lg:px-6 border-b border-border bg-background/80 backdrop-blur">
-          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileOpen(true)}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="lg:hidden" 
+            onClick={() => setMobileOpen(true)}
+            title="Open navigation"
+          >
             <Menu className="size-5" />
+          </Button>
+          
+          {/* Desktop sidebar toggle */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hidden lg:flex transition-all duration-200"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            {sidebarOpen ? (
+              <ChevronLeft className="size-5" />
+            ) : (
+              <ChevronRight className="size-5" />
+            )}
           </Button>
           <div className="flex-1 max-w-md hidden sm:block">
             <div className="relative">
@@ -221,7 +273,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main key={showParent ? "p" : "s"} className="flex-1 p-4 lg:p-8 animate-in-up">{children}</main>
+        <main key={showParent ? "p" : "s"} className="flex-1 p-4 lg:p-8 animate-in-up transition-all duration-300">{children}</main>
       </div>
     </div>
   );
