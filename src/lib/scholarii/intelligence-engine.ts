@@ -459,7 +459,8 @@ export function calculateRiskMetrics(students: Student[], teachers: Teacher[]): 
 export function isAtRiskStudent(student: Student): boolean {
   const isChronicAbsentee = student.isChronicAbsentee || false;
   const lowEngagement = (student.parentEngagementScore || 0) < 45;
-  const hasFailingSubjects =
-    student.testScores && Object.values(student.testScores).some((score) => score < 50);
+  const hasFailingSubjects = !!(
+    student.testScores && Object.values(student.testScores).some((score) => score < 50)
+  );
   return isChronicAbsentee || lowEngagement || hasFailingSubjects;
 }
