@@ -3,13 +3,13 @@ import type { Role, User } from "./types";
 
 const KEY = "scholarii-user-v1";
 const THEME_KEY = "scholarii-theme";
+const PARENT_MODE_KEY = "scholarii-parent-mode";
 
 export const DEMO_USERS: Record<Role, { email: string; name: string; color: string }> = {
   principal: { email: "principal@school.com", name: "Dr. Asha Verma", color: "#667eea" },
   teacher: { email: "teacher@school.com", name: "Rajesh Kumar", color: "#764ba2" },
   student: { email: "student@school.com", name: "Aarav Sharma", color: "#10b981" },
   admin: { email: "admin@school.com", name: "Priya Mehta", color: "#f59e0b" },
-  parent: { email: "parent@school.com", name: "Suresh Sharma", color: "#3b82f6" },
 };
 
 export const DEMO_PASSWORD = "demo123";
@@ -20,6 +20,8 @@ interface AuthCtx {
   logout: () => void;
   theme: "light" | "dark";
   toggleTheme: () => void;
+  parentMode: boolean;
+  setParentMode: (v: boolean) => void;
 }
 
 const Ctx = createContext<AuthCtx | null>(null);
@@ -27,6 +29,7 @@ const Ctx = createContext<AuthCtx | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [parentMode, setParentModeState] = useState(false);
 
   useEffect(() => {
     try {
@@ -35,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const t = (localStorage.getItem(THEME_KEY) as "light" | "dark") || "light";
       setTheme(t);
       document.documentElement.classList.toggle("dark", t === "dark");
+      setParentModeState(localStorage.getItem(PARENT_MODE_KEY) === "1");
     } catch {}
   }, []);
 
@@ -52,6 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem(KEY);
+    localStorage.removeItem(PARENT_MODE_KEY);
+    setParentModeState(false);
     setUser(null);
   };
 
@@ -62,7 +68,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle("dark", next === "dark");
   };
 
-  return <Ctx.Provider value={{ user, login, logout, theme, toggleTheme }}>{children}</Ctx.Provider>;
+  const setParentMode = (v: boolean) => {
+    setParentModeState(v);
+    localStorage.setItem(PARENT_MODE_KEY, v ? "1" : "0");
+  };
+
+  return <Ctx.Provider value={{ user, login, logout, theme, toggleTheme, parentMode, setParentMode }}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {

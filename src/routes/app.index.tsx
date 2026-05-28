@@ -11,13 +11,12 @@ export const Route = createFileRoute("/app/")({
 });
 
 function Dashboard() {
-  const { user } = useAuth();
+  const { user, parentMode } = useAuth();
   if (!user) return null;
   switch (user.role) {
     case "principal": return <PrincipalDashboard />;
     case "teacher": return <TeacherDashboard />;
-    case "student": return <StudentDashboard />;
+    case "student": return parentMode ? <ParentDashboard /> : <StudentDashboard />;
     case "admin": return <AdminDashboard />;
-    case "parent": return <ParentDashboard />;
   }
 }

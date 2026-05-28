@@ -17,7 +17,7 @@ type Status = "present" | "absent" | "late";
 
 function AttendancePage() {
   const { user } = useAuth();
-  if (user?.role === "student" || user?.role === "parent") return <StudentAttendanceView />;
+  if (user?.role === "student") return <StudentAttendanceView />;
   return <TeacherMarkAttendance />;
 }
 

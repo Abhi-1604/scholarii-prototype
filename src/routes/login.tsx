@@ -138,111 +138,55 @@ function LoginPage() {
                 </div>
               </div>
 
-              <Card className="glass-strong border-glow relative rounded-[30px] border border-white/50 bg-white/66 p-5 shadow-[0_28px_70px_-42px_rgba(44,22,93,0.32)] sm:p-6 dark:border-white/10 dark:bg-white/7">
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/95 to-transparent dark:via-white/25" />
-                <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-brand-gradient opacity-9 blur-2xl" />
-                <div className="absolute bottom-0 left-0 h-24 w-24 rounded-full bg-info/9 blur-2xl" />
+      {/* Right form */}
+      <div className="flex items-center justify-center p-6 lg:p-12 bg-background">
+        <div className="w-full max-w-md">
+          <Link to="/" className="lg:hidden flex items-center gap-2 mb-8">
+            <div className="size-8 rounded-lg bg-brand-gradient grid place-items-center text-white font-bold">S</div>
+            <span className="font-semibold">Scholarii</span>
+          </Link>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
+          <p className="text-muted-foreground mt-1.5">Sign in to continue to your dashboard.</p>
 
-                <div className="relative z-10">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/60 px-3 py-1.5 text-sm font-medium text-foreground/80 shadow-soft dark:border-white/10 dark:bg-white/8">
-                    <Sparkles className="size-3.5 text-primary" />
-                    <span>Secure sign in</span>
-                  </div>
-
-                  <div className="mt-4">
-                    <h2 className="font-display text-2xl font-semibold tracking-[-0.05em] text-foreground">Welcome back</h2>
-                    <p className="mt-2.5 text-sm leading-6 text-muted-foreground">
-                      Sign in to your Scholarii workspace and continue your school day.
-                    </p>
-                  </div>
-
-                  <form onSubmit={submit} className="mt-6 space-y-3.5">
-                    <div className="space-y-2.5">
-                      <label htmlFor="role" className="text-sm font-medium text-foreground/85">
-                        Select your role
-                      </label>
-                      <Select value={role} onValueChange={(value) => setRole(value as Role)}>
-                        <SelectTrigger
-                          id="role"
-                          className="h-10 rounded-[16px] border-white/55 bg-white/75 px-3 text-sm shadow-[0_10px_26px_-20px_rgba(30,20,70,0.28)] backdrop-blur-sm transition-all duration-200 hover:border-primary/30 focus:ring-0 dark:border-white/10 dark:bg-white/8"
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="principal">Principal</SelectItem>
-                          <SelectItem value="teacher">Teacher</SelectItem>
-                          <SelectItem value="student">Student</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="parent">Parent</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <FloatingInput
-                      id="email"
-                      label="Email address"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      icon={Mail}
-                      required
-                    />
-
-                    <FloatingInput
-                      id="password"
-                      label="Password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      icon={Lock}
-                      required
-                      trailingButton={
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword((value) => !value)}
-                          className="relative z-10 inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                          aria-label={showPassword ? "Hide password" : "Show password"}
-                        >
-                          {showPassword ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
-                        </button>
-                      }
-                    />
-
-                    <div className="flex items-center justify-between gap-3 pt-0.5 text-xs">
-                      <label className="flex items-center gap-2 text-muted-foreground">
-                        <Checkbox checked={remember} onCheckedChange={(value) => setRemember(!!value)} className="rounded-sm" />
-                        <span className="text-xs">Remember me</span>
-                      </label>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          toast.info("Demo only");
-                        }}
-                        className="font-medium text-primary transition-colors hover:text-primary/80 hover:underline text-xs"
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                      className="shine-sweep h-10 w-full rounded-[15px] border-0 bg-brand-gradient px-5 text-sm font-semibold text-white shadow-[0_18px_50px_-22px_rgba(91,50,182,0.62)] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_26px_72px_-24px_rgba(91,50,182,0.78)]"
-                    >
-                      {loading ? (
-                        <>
-                          <LoaderCircle className="size-4 animate-spin" />
-                          Signing you in...
-                        </>
-                      ) : (
-                        <>
-                          Enter Scholarii
-                          <ArrowRight className="size-4" />
-                        </>
-                      )}
-                    </Button>
-                  </form>
+          <form onSubmit={submit} className="mt-8 space-y-4">
+            <div className="space-y-1.5">
+              <Label>Role</Label>
+              <Select value={role} onValueChange={(v) => setRole(v as Role)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="principal">Principal</SelectItem>
+                  <SelectItem value="teacher">Teacher</SelectItem>
+                  <SelectItem value="student">Student</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="parent">Parent</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input className="pl-9" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@school.com" required />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input className="pl-9" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox checked={remember} onCheckedChange={(v) => setRemember(!!v)} />
+                <span>Remember me</span>
+              </label>
+              <a href="#" onClick={(e) => { e.preventDefault(); toast.info("Password reset is demo-only."); }} className="text-primary hover:underline">Forgot password?</a>
+            </div>
+            <Button type="submit" disabled={loading} className="w-full bg-brand-gradient text-white border-0 hover:opacity-90 shadow-glow">
+              {loading ? "Signing in..." : (<>Sign in <ArrowRight className="size-4 ml-1" /></>)}
+            </Button>
+          </form>
 
                   <div className="my-3 flex items-center gap-3">
                     <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />

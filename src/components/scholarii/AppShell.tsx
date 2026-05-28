@@ -5,11 +5,12 @@ import {
   Home, Users, Briefcase, BookOpen, DollarSign, BarChart3, Megaphone, Settings,
   ClipboardCheck, ClipboardList, GraduationCap, CalendarClock, UserCircle, Building2,
   ShieldCheck, FileText, ScrollText, Calendar, Wallet, MessageSquare, Baby,
-  LogOut, Bell, Moon, Sun, Search, Menu, X, BookMarked,
+  LogOut, Bell, Moon, Sun, Search, Menu, BookMarked, User as StudentIcon, Users as ParentIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { useState, type ReactNode } from "react";
@@ -17,6 +18,16 @@ import { cn } from "@/lib/utils";
 import scholariiIconUrl from "../../../Icons/scholarii-icon.png?url";
 
 type NavItem = { to: string; label: string; icon: typeof Home };
+
+const PARENT_NAV: NavItem[] = [
+  { to: "/app", label: "Dashboard", icon: Home },
+  { to: "/app/children", label: "My Children", icon: Baby },
+  { to: "/app/attendance", label: "Attendance", icon: ClipboardCheck },
+  { to: "/app/academics", label: "Academics", icon: BookOpen },
+  { to: "/app/fees", label: "Fee Payments", icon: Wallet },
+  { to: "/app/communication", label: "Communication", icon: MessageSquare },
+  { to: "/app/events", label: "Events", icon: Calendar },
+];
 
 const NAV: Record<Role, NavItem[]> = {
   principal: [
@@ -58,29 +69,23 @@ const NAV: Record<Role, NavItem[]> = {
     { to: "/app/settings", label: "System Settings", icon: Settings },
     { to: "/app/logs", label: "Audit Logs", icon: ScrollText },
   ],
-  parent: [
-    { to: "/app", label: "Dashboard", icon: Home },
-    { to: "/app/children", label: "My Children", icon: Baby },
-    { to: "/app/attendance", label: "Attendance", icon: ClipboardCheck },
-    { to: "/app/academics", label: "Academics", icon: BookOpen },
-    { to: "/app/fees", label: "Fee Payments", icon: Wallet },
-    { to: "/app/communication", label: "Communication", icon: MessageSquare },
-    { to: "/app/events", label: "Events", icon: Calendar },
-  ],
 };
 
 const ROLE_LABEL: Record<Role, string> = {
-  principal: "Principal", teacher: "Teacher", student: "Student", admin: "Admin", parent: "Parent",
+  principal: "Principal", teacher: "Teacher", student: "Student", admin: "Admin",
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, logout, theme, toggleTheme } = useAuth();
+  const { user, logout, theme, toggleTheme, parentMode, setParentMode } = useAuth();
   const nav = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [mobileOpen, setMobileOpen] = useState(false);
 
   if (!user) return null;
-  const items = NAV[user.role];
+  const isStudent = user.role === "student";
+  const showParent = isStudent && parentMode;
+  const items = showParent ? PARENT_NAV : NAV[user.role];
+  const portalLabel = showParent ? "Parent" : ROLE_LABEL[user.role];
   const initials = user.name.split(" ").map((s) => s[0]).slice(0, 2).join("");
 
   const SidebarInner = (
@@ -91,10 +96,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
         <div>
           <div className="font-semibold text-sidebar-foreground leading-none">Scholarii</div>
-          <div className="text-[11px] text-muted-foreground mt-0.5">{ROLE_LABEL[user.role]} Portal</div>
+          <div className="text-[11px] text-muted-foreground mt-0.5 transition-all">{portalLabel} Portal</div>
         </div>
       </div>
-      <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+      <nav key={showParent ? "parent" : "self"} className="flex-1 overflow-y-auto p-3 space-y-1 animate-in-up">
         {items.map((it) => {
           const active = it.to === "/app" ? path === "/app" : path.startsWith(it.to);
           const Icon = it.icon;
@@ -130,12 +135,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background flex w-full">
-      {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-64 shrink-0 bg-sidebar border-r border-sidebar-border">
         {SidebarInner}
       </aside>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
@@ -157,6 +160,25 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </div>
           <div className="flex-1 sm:hidden" />
+
+          {isStudent && (
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-border bg-muted/40 transition-all">
+              <div className={cn("flex items-center gap-1.5 text-xs font-medium transition-colors", !parentMode ? "text-foreground" : "text-muted-foreground")}>
+                <StudentIcon className="size-3.5" />
+                <span className="hidden md:inline">Student</span>
+              </div>
+              <Switch
+                checked={parentMode}
+                onCheckedChange={setParentMode}
+                aria-label="Toggle parent mode"
+              />
+              <div className={cn("flex items-center gap-1.5 text-xs font-medium transition-colors", parentMode ? "text-foreground" : "text-muted-foreground")}>
+                <ParentIcon className="size-3.5" />
+                <span className="hidden md:inline">Parent</span>
+              </div>
+            </div>
+          )}
+
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === "light" ? <Moon className="size-5" /> : <Sun className="size-5" />}
           </Button>
@@ -180,6 +202,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <div className="text-xs text-muted-foreground font-normal">{user.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              {isStudent && (
+                <>
+                  <DropdownMenuItem onClick={() => setParentMode(!parentMode)}>
+                    {parentMode ? <StudentIcon className="size-4 mr-2" /> : <ParentIcon className="size-4 mr-2" />}
+                    Switch to {parentMode ? "Student" : "Parent"} Mode
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem onClick={() => nav({ to: "/app/profile" })}><UserCircle className="size-4 mr-2" />Profile</DropdownMenuItem>
               <DropdownMenuItem><Settings className="size-4 mr-2" />Settings</DropdownMenuItem>
               <DropdownMenuItem><ShieldCheck className="size-4 mr-2" />Help & Support</DropdownMenuItem>
@@ -190,7 +221,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex-1 p-4 lg:p-8 animate-in-up">{children}</main>
+        <main key={showParent ? "p" : "s"} className="flex-1 p-4 lg:p-8 animate-in-up">{children}</main>
       </div>
     </div>
   );
