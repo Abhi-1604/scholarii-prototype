@@ -16,9 +16,8 @@ export const Route = createFileRoute("/app/attendance")({ component: AttendanceP
 type Status = "present" | "absent" | "late";
 
 function AttendancePage() {
-  const { user, parentMode } = useAuth();
+  const { user } = useAuth();
   if (user?.role === "student") return <StudentAttendanceView />;
-  if (user?.role === "student" && parentMode) return <StudentAttendanceView />;
   return <TeacherMarkAttendance />;
 }
 
