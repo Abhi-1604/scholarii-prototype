@@ -1,11 +1,29 @@
 import { Card } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import type { SchoolPulseSector, OperationalSummary } from "@/lib/scholarii/types";
+
+const STATUS_LABELS = {
+  healthy: "Healthy",
+  moderate: "Moderate",
+  attention: "Attention Needed",
+} as const;
+
+interface SchoolPulseDetail {
+  metric: string;
+  currentValue: string;
+  target?: string;
+  status: string;
+  reason: string;
+  calculation: string;
+  recommendation?: string;
+}
 
 interface SchoolPulseProps {
   sectors: SchoolPulseSector[];
   summary: OperationalSummary;
+  details?: Record<string, SchoolPulseDetail>;
 }
 
 function StatusBadge({ status }: { status: "healthy" | "moderate" | "attention" }) {
@@ -22,9 +40,9 @@ function StatusBadge({ status }: { status: "healthy" | "moderate" | "attention" 
   };
 
   const labels = {
-    healthy: "Healthy",
-    moderate: "Moderate",
-    attention: "Attention Needed",
+    healthy: STATUS_LABELS.healthy,
+    moderate: STATUS_LABELS.moderate,
+    attention: STATUS_LABELS.attention,
   };
 
   return (
@@ -35,7 +53,7 @@ function StatusBadge({ status }: { status: "healthy" | "moderate" | "attention" 
   );
 }
 
-export function SchoolPulse({ sectors, summary }: SchoolPulseProps) {
+export function SchoolPulse({ sectors, summary, details }: SchoolPulseProps) {
   return (
     <Card className="p-6 border border-border">
       <div className="space-y-6">
@@ -46,27 +64,94 @@ export function SchoolPulse({ sectors, summary }: SchoolPulseProps) {
         </div>
 
         {/* Operational Status Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {sectors.map((sector) => (
-            <div
-              key={sector.name}
-              className={cn(
-                "rounded-lg p-3 border-2 transition-colors",
-                sector.status === "healthy"
-                  ? "border-emerald-200 bg-emerald-50/40 dark:bg-emerald-950/20 dark:border-emerald-900"
-                  : sector.status === "moderate"
-                  ? "border-amber-200 bg-amber-50/40 dark:bg-amber-950/20 dark:border-amber-900"
-                  : "border-red-200 bg-red-50/40 dark:bg-red-950/20 dark:border-red-900"
-              )}
-            >
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium">{sector.name}</h3>
-                <StatusBadge status={sector.status} />
-                {sector.value && <p className="text-xs font-semibold text-foreground">{sector.value}</p>}
-                {sector.description && <p className="text-xs text-muted-foreground">{sector.description}</p>}
-              </div>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+          {sectors.map((sector) => {
+            const detail = details?.[sector.name];
+
+            return (
+              <Popover key={sector.name}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      "rounded-lg p-3 border-2 transition-all text-left hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      sector.status === "healthy"
+                        ? "border-emerald-200 bg-emerald-50/40 dark:bg-emerald-950/20 dark:border-emerald-900"
+                        : sector.status === "moderate"
+                        ? "border-amber-200 bg-amber-50/40 dark:bg-amber-950/20 dark:border-amber-900"
+                        : "border-red-200 bg-red-50/40 dark:bg-red-950/20 dark:border-red-900"
+                    )}
+                  >
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-medium">{sector.name}</h3>
+                      <StatusBadge status={sector.status} />
+                      {sector.value && <p className="text-xs font-semibold text-foreground">{sector.value}</p>}
+                      {sector.description && <p className="text-xs text-muted-foreground">{sector.description}</p>}
+                      <p className="text-[11px] text-muted-foreground">View details</p>
+                    </div>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-80">
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-sm font-semibold">{sector.name}</h4>
+                      {detail?.metric && (
+                        <p className="text-xs text-muted-foreground">{detail.metric}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                        Current value
+                      </p>
+                      <p className="text-sm font-semibold">
+                        {detail?.currentValue || sector.value || "Not available"}
+                      </p>
+                      {detail?.target && (
+                        <p className="text-xs text-muted-foreground">Target: {detail.target}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                        Reason
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {detail?.reason || "Status based on current readings."}
+                      </p>
+                    </div>
+
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                        Status
+                      </p>
+                      <p className="text-xs font-medium">
+                        {detail?.status || STATUS_LABELS[sector.status]}
+                      </p>
+                    </div>
+
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                        How status is calculated
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {detail?.calculation || "Threshold-based evaluation."}
+                      </p>
+                    </div>
+
+                    {detail?.recommendation && (
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                          Recommended action
+                        </p>
+                        <p className="text-xs text-muted-foreground">{detail.recommendation}</p>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            );
+          })}
         </div>
 
         {/* AI-Generated Operational Summary */}

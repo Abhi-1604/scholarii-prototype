@@ -36,7 +36,6 @@ import { KPICarousel } from "@/components/scholarii/KPICarousel";
 import { SchoolPulse } from "@/components/scholarii/SchoolPulse";
 import { LiveActivityFeed } from "@/components/scholarii/LiveActivityFeed";
 import { AIInsightsPanel } from "@/components/scholarii/AIInsightsPanel"; // NEW
-import { AttendancePieChart } from "@/components/scholarii/AttendancePieChart";
 
 // Import all modal components
 import { AttendanceDetailModal } from "@/components/scholarii/modals/AttendanceDetailModal";
@@ -47,10 +46,17 @@ import { ParentEngagementModal } from "@/components/scholarii/modals/ParentEngag
 import { TeacherWorkloadModal } from "@/components/scholarii/modals/TeacherWorkloadModal";
 
 import type { KPICard, ActivityEvent, Alert, Recommendation } from "@/lib/scholarii/types";
-import { monthlyAttendance, feeCollection, attendanceDistribution } from "@/lib/scholarii/mock";
+import { monthlyAttendance, feeCollection } from "@/lib/scholarii/mock";
 
 export function PrincipalDashboard() {
   const data = useMemo(() => loadData(), []);
+
+  const statusLabel = (status: "healthy" | "moderate" | "attention") =>
+    status === "healthy" ? "Healthy" : status === "moderate" ? "Moderate" : "Attention Needed";
+
+  const impactRanges = ["Today", "This week", "This month", "This year"] as const;
+  type ImpactRange = (typeof impactRanges)[number];
+  const [impactRange, setImpactRange] = useState<ImpactRange>("This month");
   
   // Calculate all KPIs
   const attendanceKPI = useMemo(() => calculateStudentAttendanceKPI(data.students), [data.students]);
@@ -100,6 +106,249 @@ export function PrincipalDashboard() {
   // School Pulse & Summary
   const schoolPulseSectors = useMemo(() => calculateSchoolPulse(data.students, data.teachers, data.feeTarget), [data.students, data.teachers, data.feeTarget]);
   const operationalSummary = useMemo(() => generateOperationalSummary(data.students, data.teachers, data.feeTarget), [data.students, data.teachers, data.feeTarget]);
+
+  const schoolPulseDetails = useMemo(() => {
+    const attendanceTarget = 90;
+    const feeTargetPercent = 85;
+    const engagementTarget = 75;
+    const academicTarget = 80;
+    const overloadedTeachers = data.teachers.filter((t) => t.isOverloaded).length;
+    const avgClassesPerDay = Math.round(
+      data.teachers.reduce((sum, t) => sum + (t.classesPerDay || 0), 0) / data.teachers.length
+    );
+
+    return {
+      Attendance: {
+        metric: "Student attendance rate across all grades",
+        currentValue: `${attendanceKPI.percentage}% present today`,
+        target: `${attendanceTarget}% school target`,
+        reason:
+          attendanceKPI.percentage >= attendanceTarget
+            ? "Attendance has remained above target for the last month."
+            : attendanceKPI.percentage >= 80
+            ? "Attendance is close to target but dips in a few grades."
+            : "Attendance is below target in multiple grades.",
+        status: statusLabel(attendanceKPI.status),
+        calculation: "Healthy >= 90%, Moderate 80-89%, Attention < 80%.",
+        recommendation:
+          attendanceKPI.percentage >= attendanceTarget
+            ? "Continue monitoring Grade 9 attendance."
+            : "Focus on grades below 80% attendance.",
+      },
+      "Fee Collection": {
+        metric: "Fees collected vs monthly target",
+        currentValue: `${feeCollectionKPI.percentage}% of target collected`,
+        target: `${feeTargetPercent}% monthly target`,
+        reason:
+          feeCollectionKPI.percentage >= feeTargetPercent
+            ? "Collections are on track for the month."
+            : feeCollectionKPI.percentage >= 70
+            ? "Collections are slightly behind target."
+            : "Collections are behind target with overdue accounts.",
+        status: statusLabel(feeCollectionKPI.status),
+        calculation: "Healthy >= 85%, Moderate 70-84%, Attention < 70%.",
+        recommendation:
+          feeCollectionKPI.percentage >= feeTargetPercent
+            ? "Maintain reminder cadence."
+            : "Prioritize outreach to overdue families.",
+      },
+      "Teacher Workload": {
+        metric: "Teacher workload balance and overload risk",
+        currentValue: `${overloadedTeachers} overloaded, ${avgClassesPerDay} avg classes/day`,
+        target: "0 overloaded teachers",
+        reason:
+          overloadedTeachers === 0
+            ? "Workload is balanced across staff."
+            : overloadedTeachers <= 2
+            ? "A few staff members are nearing overload."
+            : "Multiple teachers are overloaded.",
+        status: statusLabel(teacherWorkloadKPI.status),
+        calculation: "Healthy = 0 overloaded, Moderate = 1-2, Attention >= 3.",
+        recommendation:
+          overloadedTeachers === 0
+            ? "Keep current distribution."
+            : "Rebalance class assignments this week.",
+      },
+      "Parent Engagement": {
+        metric: "Average parent engagement score",
+        currentValue: `${parentEngagementKPI.percentage}% engagement score`,
+        target: `${engagementTarget}% engagement target`,
+        reason:
+          parentEngagementKPI.percentage >= engagementTarget
+            ? "Engagement remains strong across most grades."
+            : parentEngagementKPI.percentage >= 60
+            ? "Engagement is stable but trending lower in some classes."
+            : "Engagement is below target in several classes.",
+        status: statusLabel(parentEngagementKPI.status),
+        calculation: "Healthy >= 75%, Moderate 60-74%, Attention < 60%.",
+        recommendation:
+          parentEngagementKPI.percentage >= engagementTarget
+            ? "Continue weekly communication cadence."
+            : "Launch outreach for low-engagement families.",
+      },
+      "Academic Performance": {
+        metric: "School-wide academic performance average",
+        currentValue: `${academicPerformanceKPI.percentage}% average score`,
+        target: `${academicTarget}% academic target`,
+        reason:
+          academicPerformanceKPI.percentage >= academicTarget
+            ? "Scores are above target across core subjects."
+            : academicPerformanceKPI.percentage >= 70
+            ? "Performance is stable but uneven across grades."
+            : "Performance is below target in multiple subjects.",
+        status: statusLabel(academicPerformanceKPI.status),
+        calculation: "Healthy >= 80%, Moderate 70-79%, Attention < 70%.",
+        recommendation:
+          academicPerformanceKPI.percentage >= academicTarget
+            ? "Share best practices across departments."
+            : "Schedule focused support for weak subjects.",
+      },
+      Compliance: {
+        metric: "Policy, reporting, and safety compliance",
+        currentValue: "97% compliance score",
+        target: "95% compliance target",
+        reason: "All required submissions are on time with no overdue filings.",
+        status: "Healthy",
+        calculation: "Healthy >= 95%, Moderate 90-94%, Attention < 90%.",
+        recommendation: "Maintain monthly audit checks.",
+      },
+    };
+  }, [
+    data.students,
+    data.teachers,
+    attendanceKPI,
+    feeCollectionKPI,
+    parentEngagementKPI,
+    teacherWorkloadKPI,
+    academicPerformanceKPI,
+  ]);
+
+  const impactDataByRange: Record<ImpactRange, {
+    adoptionScore: { score: string; label: string };
+    adoptionBreakdown: Array<{ label: string; value: string }>;
+    impactKpis: Array<{ label: string; value: string }>;
+    valueHighlights: Array<{ value: string; label: string }>;
+    summary: string;
+  }> = {
+    Today: {
+      adoptionScore: { score: "82%", label: "Strong Adoption" },
+      adoptionBreakdown: [
+        { label: "Teacher Usage", value: "88" },
+        { label: "Student Usage", value: "80" },
+        { label: "Parent Usage", value: "66" },
+        { label: "Automation Usage", value: "79" },
+      ],
+      impactKpis: [
+        { label: "Teacher AI Queries", value: "96" },
+        { label: "Student AI Queries", value: "240" },
+        { label: "Administrative Hours Saved", value: "3.4 Hours" },
+        { label: "Documents in School Brain", value: "4" },
+        { label: "AI Tasks Completed", value: "110" },
+        { label: "Staff Adoption Rate", value: "89%" },
+        { label: "Parent Adoption Rate", value: "64%" },
+        { label: "Student Adoption Rate", value: "78%" },
+        { label: "Automations Executed", value: "38" },
+      ],
+      valueHighlights: [
+        { value: "3.4 Hours Saved", label: "Administrative hours saved" },
+        { value: "260 Manual Entries Avoided", label: "Operational entries removed" },
+        { value: "+1% Fee Collection Improvement", label: "Collection uplift" },
+        { value: "38% Faster Attendance Processing", label: "Attendance workflow" },
+        { value: "1.3x Faster Parent Communication", label: "Communication cycle" },
+      ],
+      summary:
+        "Scholarii usage is steady today. Teachers saved 3.4 administrative hours through automation, and staff adoption is at 89%.",
+    },
+    "This week": {
+      adoptionScore: { score: "84%", label: "Strong Adoption" },
+      adoptionBreakdown: [
+        { label: "Teacher Usage", value: "90" },
+        { label: "Student Usage", value: "84" },
+        { label: "Parent Usage", value: "72" },
+        { label: "Automation Usage", value: "82" },
+      ],
+      impactKpis: [
+        { label: "Teacher AI Queries", value: "640" },
+        { label: "Student AI Queries", value: "1,840" },
+        { label: "Administrative Hours Saved", value: "22 Hours" },
+        { label: "Documents in School Brain", value: "22" },
+        { label: "AI Tasks Completed", value: "720" },
+        { label: "Staff Adoption Rate", value: "91%" },
+        { label: "Parent Adoption Rate", value: "72%" },
+        { label: "Student Adoption Rate", value: "84%" },
+        { label: "Automations Executed", value: "210" },
+      ],
+      valueHighlights: [
+        { value: "22 Hours Saved", label: "Administrative hours saved" },
+        { value: "1,800 Manual Entries Avoided", label: "Operational entries removed" },
+        { value: "+4% Fee Collection Improvement", label: "Collection uplift" },
+        { value: "56% Faster Attendance Processing", label: "Attendance workflow" },
+        { value: "2.2x Faster Parent Communication", label: "Communication cycle" },
+      ],
+      summary:
+        "Scholarii usage is up week over week. Teachers saved 22 administrative hours, and staff adoption is holding at 91%.",
+    },
+    "This month": {
+      adoptionScore: { score: "86%", label: "Excellent Adoption" },
+      adoptionBreakdown: [
+        { label: "Teacher Usage", value: "92" },
+        { label: "Student Usage", value: "88" },
+        { label: "Parent Usage", value: "81" },
+        { label: "Automation Usage", value: "85" },
+      ],
+      impactKpis: [
+        { label: "Teacher AI Queries", value: "2,840" },
+        { label: "Student AI Queries", value: "7,920" },
+        { label: "Administrative Hours Saved", value: "96 Hours" },
+        { label: "Documents in School Brain", value: "380" },
+        { label: "AI Tasks Completed", value: "3,120" },
+        { label: "Staff Adoption Rate", value: "93%" },
+        { label: "Parent Adoption Rate", value: "81%" },
+        { label: "Student Adoption Rate", value: "88%" },
+        { label: "Automations Executed", value: "920" },
+      ],
+      valueHighlights: [
+        { value: "96 Hours Saved", label: "Administrative hours saved" },
+        { value: "7,800 Manual Entries Avoided", label: "Operational entries removed" },
+        { value: "+9% Fee Collection Improvement", label: "Collection uplift" },
+        { value: "70% Faster Attendance Processing", label: "Attendance workflow" },
+        { value: "3.4x Faster Parent Communication", label: "Communication cycle" },
+      ],
+      summary:
+        "Scholarii usage continues to grow across the school. Teachers have saved 96 administrative hours through automation and AI assistance. Staff adoption remains high at 93%.",
+    },
+    "This year": {
+      adoptionScore: { score: "90%", label: "Outstanding Adoption" },
+      adoptionBreakdown: [
+        { label: "Teacher Usage", value: "94" },
+        { label: "Student Usage", value: "90" },
+        { label: "Parent Usage", value: "86" },
+        { label: "Automation Usage", value: "89" },
+      ],
+      impactKpis: [
+        { label: "Teacher AI Queries", value: "28,600" },
+        { label: "Student AI Queries", value: "78,400" },
+        { label: "Administrative Hours Saved", value: "1,140 Hours" },
+        { label: "Documents in School Brain", value: "4,820" },
+        { label: "AI Tasks Completed", value: "28,900" },
+        { label: "Staff Adoption Rate", value: "94%" },
+        { label: "Parent Adoption Rate", value: "86%" },
+        { label: "Student Adoption Rate", value: "90%" },
+        { label: "Automations Executed", value: "8,200" },
+      ],
+      valueHighlights: [
+        { value: "1,140 Hours Saved", label: "Administrative hours saved" },
+        { value: "92,000 Manual Entries Avoided", label: "Operational entries removed" },
+        { value: "+14% Fee Collection Improvement", label: "Collection uplift" },
+        { value: "78% Faster Attendance Processing", label: "Attendance workflow" },
+        { value: "4.4x Faster Parent Communication", label: "Communication cycle" },
+      ],
+      summary:
+        "Year to date, Scholarii has saved 1,140 administrative hours through automation and AI assistance. Staff adoption remains high at 94%.",
+    },
+  };
+
+  const impactData = impactDataByRange[impactRange];
 
   // NEW: Intelligence Layer Calculations
   const alerts = useMemo(() => {
@@ -214,68 +463,84 @@ export function PrincipalDashboard() {
 
           {/* School Pulse Section */}
           <div>
-            <SchoolPulse sectors={schoolPulseSectors} summary={operationalSummary} />
+            <SchoolPulse
+              sectors={schoolPulseSectors}
+              summary={operationalSummary}
+              details={schoolPulseDetails}
+            />
           </div>
 
-          {/* Attendance Overview Section: Pie Chart (Left) + Summary Cards (Right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Left: Attendance Pie Chart */}
-            <div className="lg:col-span-1">
-              <AttendancePieChart data={attendanceDistribution} title="Today's Attendance" />
+          {/* Scholarii Impact & Adoption */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Scholarii Impact &amp; Adoption</h2>
+              <div className="flex items-center gap-2">
+                {impactRanges.map((range) => (
+                  <Button
+                    key={range}
+                    size="sm"
+                    variant={impactRange === range ? "secondary" : "outline"}
+                    onClick={() => setImpactRange(range)}
+                  >
+                    {range}
+                  </Button>
+                ))}
+              </div>
             </div>
 
-            {/* Right: Summary Stats Cards */}
-            <div className="lg:col-span-2 space-y-4">
-              {/* Top Performing Classes */}
-              <Card className="p-5">
-                <h3 className="font-semibold text-sm mb-4">Top Performing Grades</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <Card className="p-5 border-2 border-emerald-200/60 dark:border-emerald-900/40 bg-emerald-50/40 dark:bg-emerald-950/20">
                 <div className="space-y-3">
-                  {classPerformanceByGrade.slice().sort((a, b) => b.v - a.v).slice(0, 4).map((cls, i) => (
-                    <div key={i} className="flex items-center justify-between pb-3 border-b last:border-b-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-brand-gradient flex items-center justify-center text-white text-xs font-semibold">
-                          {cls.c}
-                        </div>
-                        <span className="font-medium text-sm">Grade {cls.c}</span>
+                  <div>
+                    <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">
+                      Scholarii Adoption Score
+                    </p>
+                    <div className="text-3xl font-bold text-foreground">{impactData.adoptionScore.score}</div>
+                    <p className="text-sm text-muted-foreground">{impactData.adoptionScore.label}</p>
+                  </div>
+                  <div className="space-y-2">
+                    {impactData.adoptionBreakdown.map((item) => (
+                      <div key={item.label} className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">{item.label}</span>
+                        <span className="font-semibold text-foreground">{item.value}</span>
                       </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-sm">{cls.v}%</div>
-                        <div className="text-xs text-muted-foreground">Performance</div>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </Card>
 
-              {/* Fee Collection Summary */}
-              <Card className="p-5">
-                <h3 className="font-semibold text-sm mb-4">Fee Collection Status</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-emerald-50 dark:bg-emerald-950 rounded-lg p-3">
-                    <div className="text-xs text-muted-foreground mb-1">Paid</div>
-                    <div className="text-lg font-bold text-emerald-600">{data.students.filter(s => s.feeStatus === "Paid").length}</div>
-                    <div className="text-xs text-emerald-600/80">students</div>
-                  </div>
-                  <div className="bg-amber-50 dark:bg-amber-950 rounded-lg p-3">
-                    <div className="text-xs text-muted-foreground mb-1">Pending</div>
-                    <div className="text-lg font-bold text-amber-600">{data.students.filter(s => s.feeStatus === "Pending").length}</div>
-                    <div className="text-xs text-amber-600/80">students</div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="bg-red-50 dark:bg-red-950 rounded-lg p-3">
-                    <div className="text-xs text-muted-foreground mb-1">Overdue</div>
-                    <div className="text-lg font-bold text-red-600">{data.students.filter(s => s.feeStatus === "Overdue").length}</div>
-                    <div className="text-xs text-red-600/80">students</div>
-                  </div>
-                  <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-3">
-                    <div className="text-xs text-muted-foreground mb-1">Collection %</div>
-                    <div className="text-lg font-bold text-blue-600">{feeCollectionKPI.percentage}%</div>
-                    <div className="text-xs text-blue-600/80">of target</div>
-                  </div>
-                </div>
-              </Card>
+              <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                {impactData.impactKpis.map((item) => (
+                  <Card key={item.label} className="p-4">
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">{item.label}</p>
+                      <p className="text-lg font-semibold text-foreground">{item.value}</p>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-2">Value Generated</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {impactData.valueHighlights.map((item) => (
+                  <Card
+                    key={item.value}
+                    className="p-4 border-2 border-slate-200/70 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/30"
+                  >
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-foreground">{item.value}</p>
+                      <p className="text-xs text-muted-foreground">{item.label}</p>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Card className="p-4 border border-border bg-muted/30">
+              <p className="text-sm text-muted-foreground">{impactData.summary}</p>
+            </Card>
           </div>
 
           {/* Main Content Grid: Activity Feed + Analytics + AI Insights */}

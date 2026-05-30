@@ -230,6 +230,7 @@ export function calculateSchoolPulse(
   const feeKPI = calculateFeeCollectionKPI(students, feeTarget);
   const workloadKPI = calculateTeacherWorkloadKPI(teachers);
   const engagementKPI = calculateParentEngagementKPI(students);
+  const academicKPI = calculateAcademicPerformanceKPI(students);
 
   return [
     {
@@ -255,6 +256,12 @@ export function calculateSchoolPulse(
       status: engagementKPI.status,
       value: `${engagementKPI.percentage}%`,
       description: "Overall engagement score",
+    },
+    {
+      name: "Academic Performance",
+      status: academicKPI.status,
+      value: `${academicKPI.percentage}%`,
+      description: "School-wide academic average",
     },
     {
       name: "Compliance",
