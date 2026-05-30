@@ -35,6 +35,7 @@ import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
 import { Route as AppAssignmentsRouteImport } from './routes/app.assignments'
 import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
+import { Route as AppAdmissionsRouteImport } from './routes/app.admissions'
 import { Route as AppAcademicsRouteImport } from './routes/app.academics'
 
 const LoginRoute = LoginRouteImport.update({
@@ -167,6 +168,11 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdmissionsRoute = AppAdmissionsRouteImport.update({
+  id: '/admissions',
+  path: '/admissions',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAcademicsRoute = AppAcademicsRouteImport.update({
   id: '/academics',
   path: '/academics',
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/app/academics': typeof AppAcademicsRoute
+  '/app/admissions': typeof AppAdmissionsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/assignments': typeof AppAssignmentsRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/app/academics': typeof AppAcademicsRoute
+  '/app/admissions': typeof AppAdmissionsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/assignments': typeof AppAssignmentsRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/app/academics': typeof AppAcademicsRoute
+  '/app/admissions': typeof AppAdmissionsRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/announcements': typeof AppAnnouncementsRoute
   '/app/assignments': typeof AppAssignmentsRoute
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/app/academics'
+    | '/app/admissions'
     | '/app/analytics'
     | '/app/announcements'
     | '/app/assignments'
@@ -295,6 +305,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/app/academics'
+    | '/app/admissions'
     | '/app/analytics'
     | '/app/announcements'
     | '/app/assignments'
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/app/academics'
+    | '/app/admissions'
     | '/app/analytics'
     | '/app/announcements'
     | '/app/assignments'
@@ -539,6 +551,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admissions': {
+      id: '/app/admissions'
+      path: '/admissions'
+      fullPath: '/app/admissions'
+      preLoaderRoute: typeof AppAdmissionsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/academics': {
       id: '/app/academics'
       path: '/academics'
@@ -551,6 +570,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAcademicsRoute: typeof AppAcademicsRoute
+  AppAdmissionsRoute: typeof AppAdmissionsRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
   AppAssignmentsRoute: typeof AppAssignmentsRoute
@@ -578,6 +598,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAcademicsRoute: AppAcademicsRoute,
+  AppAdmissionsRoute: AppAdmissionsRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppAnnouncementsRoute: AppAnnouncementsRoute,
   AppAssignmentsRoute: AppAssignmentsRoute,
