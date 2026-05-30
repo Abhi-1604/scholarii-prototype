@@ -18,6 +18,7 @@ import { Route as AppTimetableRouteImport } from './routes/app.timetable'
 import { Route as AppTeachersRouteImport } from './routes/app.teachers'
 import { Route as AppStudentsRouteImport } from './routes/app.students'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppScheduleRouteImport } from './routes/app.schedule'
 import { Route as AppReportsRouteImport } from './routes/app.reports'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppMeetingsRouteImport } from './routes/app.meetings'
@@ -79,6 +80,11 @@ const AppStudentsRoute = AppStudentsRouteImport.update({
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppScheduleRoute = AppScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
   getParentRoute: () => AppRoute,
 } as any)
 const AppReportsRoute = AppReportsRouteImport.update({
@@ -188,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/app/meetings': typeof AppMeetingsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/reports': typeof AppReportsRoute
+  '/app/schedule': typeof AppScheduleRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/students': typeof AppStudentsRoute
   '/app/teachers': typeof AppTeachersRoute
@@ -215,6 +222,7 @@ export interface FileRoutesByTo {
   '/app/meetings': typeof AppMeetingsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/reports': typeof AppReportsRoute
+  '/app/schedule': typeof AppScheduleRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/students': typeof AppStudentsRoute
   '/app/teachers': typeof AppTeachersRoute
@@ -244,6 +252,7 @@ export interface FileRoutesById {
   '/app/meetings': typeof AppMeetingsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/reports': typeof AppReportsRoute
+  '/app/schedule': typeof AppScheduleRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/students': typeof AppStudentsRoute
   '/app/teachers': typeof AppTeachersRoute
@@ -274,6 +283,7 @@ export interface FileRouteTypes {
     | '/app/meetings'
     | '/app/profile'
     | '/app/reports'
+    | '/app/schedule'
     | '/app/settings'
     | '/app/students'
     | '/app/teachers'
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/app/meetings'
     | '/app/profile'
     | '/app/reports'
+    | '/app/schedule'
     | '/app/settings'
     | '/app/students'
     | '/app/teachers'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/app/meetings'
     | '/app/profile'
     | '/app/reports'
+    | '/app/schedule'
     | '/app/settings'
     | '/app/students'
     | '/app/teachers'
@@ -406,6 +418,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/app/settings'
       preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/schedule': {
+      id: '/app/schedule'
+      path: '/schedule'
+      fullPath: '/app/schedule'
+      preLoaderRoute: typeof AppScheduleRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/reports': {
@@ -548,6 +567,7 @@ interface AppRouteChildren {
   AppMeetingsRoute: typeof AppMeetingsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppReportsRoute: typeof AppReportsRoute
+  AppScheduleRoute: typeof AppScheduleRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppStudentsRoute: typeof AppStudentsRoute
   AppTeachersRoute: typeof AppTeachersRoute
@@ -574,6 +594,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMeetingsRoute: AppMeetingsRoute,
   AppProfileRoute: AppProfileRoute,
   AppReportsRoute: AppReportsRoute,
+  AppScheduleRoute: AppScheduleRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppStudentsRoute: AppStudentsRoute,
   AppTeachersRoute: AppTeachersRoute,

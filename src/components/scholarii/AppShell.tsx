@@ -33,6 +33,7 @@ const PARENT_NAV: NavItem[] = [
 const NAV: Record<Role, NavItem[]> = {
   principal: [
     { to: "/app", label: "Dashboard", icon: Home },
+    { to: "/app/schedule", label: "Operations", icon: CalendarClock },
     { to: "/app/students", label: "Students", icon: Users },
     { to: "/app/teachers", label: "Teachers", icon: Briefcase },
     { to: "/app/academics", label: "Academic Overview", icon: BookOpen },
@@ -81,7 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const nav = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!user) return null;
   const isStudent = user.role === "student";
