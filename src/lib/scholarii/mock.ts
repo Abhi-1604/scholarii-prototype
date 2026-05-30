@@ -7,6 +7,34 @@ const palette = ["#667eea", "#764ba2", "#f59e0b", "#10b981", "#3b82f6", "#ef4444
 
 const pick = <T,>(arr: T[], i: number) => arr[i % arr.length];
 
+/**
+ * Seeded random number generator for deterministic mock data
+ * Ensures the same data is generated consistently across page loads and ports
+ */
+class SeededRandom {
+  private seed: number;
+
+  constructor(seed: number = 12345) {
+    this.seed = seed;
+  }
+
+  next(): number {
+    // Linear congruential generator (deterministic)
+    this.seed = (this.seed * 9301 + 49297) % 233280;
+    return this.seed / 233280;
+  }
+
+  nextInt(min: number, max: number): number {
+    return min + Math.floor(this.next() * (max - min + 1));
+  }
+}
+
+const rng = new SeededRandom();
+
+export function getSeededRandom(): SeededRandom {
+  return rng;
+}
+
 function makeStudents(): Student[] {
   const out: Student[] = [];
   let i = 0;
@@ -27,11 +55,11 @@ function makeStudents(): Student[] {
         const rand = i % 100;
         let attendance: number;
         if (rand < 60) {
-          attendance = 85 + Math.floor(Math.random() * 11); // 85-95%
+          attendance = 85 + rng.nextInt(0, 10); // 85-95%
         } else if (rand < 90) {
-          attendance = 75 + Math.floor(Math.random() * 11); // 75-85%
+          attendance = 75 + rng.nextInt(0, 10); // 75-85%
         } else {
-          attendance = 65 + Math.floor(Math.random() * 11); // 65-75%
+          attendance = 65 + rng.nextInt(0, 10); // 65-75%
         }
         
         // Fee status: 75% paid, 15% pending, 10% overdue
@@ -170,7 +198,7 @@ function makeActivityEvents(): ActivityEvent[] {
   }));
 }
 
-const KEY = "scholarii-data-v1";
+const KEY = "scholarii-data-v2";
 
 interface StoreData {
   students: Student[];

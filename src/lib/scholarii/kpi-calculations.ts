@@ -1,5 +1,5 @@
 import type { Student, Teacher, KPICard, SchoolPulseSector, OperationalSummary, ActivityEvent } from "./types";
-import { feeCollection } from "./mock";
+import { feeCollection, getSeededRandom } from "./mock";
 
 /**
  * Calculate Student Attendance KPI
@@ -28,7 +28,7 @@ export function calculateStudentAttendanceKPI(students: Student[]): KPICard {
     status: percentage >= 90 ? "healthy" : percentage >= 80 ? "moderate" : "attention",
     sparklineData: Array.from({ length: 7 }, (_, i) => ({
       x: i,
-      y: 85 + Math.random() * 10,
+      y: 85 + getSeededRandom().next() * 10,
     })),
     icon: "users",
   };
@@ -60,7 +60,7 @@ export function calculateTeacherAttendanceKPI(teachers: Teacher[]): KPICard {
     status: activeTeachers >= totalTeachers - 2 ? "healthy" : "moderate",
     sparklineData: Array.from({ length: 7 }, (_, i) => ({
       x: i,
-      y: 90 + Math.random() * 8,
+      y: 90 + getSeededRandom().next() * 8,
     })),
     icon: "briefcase",
   };
@@ -149,7 +149,7 @@ export function calculateAcademicPerformanceKPI(students: Student[]): KPICard {
     status: schoolAverage >= 80 ? "healthy" : schoolAverage >= 70 ? "moderate" : "attention",
     sparklineData: Array.from({ length: 7 }, (_, i) => ({
       x: i,
-      y: 75 + Math.random() * 8,
+      y: 75 + getSeededRandom().next() * 8,
     })),
     icon: "book",
   };
@@ -182,7 +182,7 @@ export function calculateParentEngagementKPI(students: Student[]): KPICard {
     status: averageEngagement >= 75 ? "healthy" : averageEngagement >= 60 ? "moderate" : "attention",
     sparklineData: Array.from({ length: 7 }, (_, i) => ({
       x: i,
-      y: 60 + Math.random() * 20,
+      y: 60 + getSeededRandom().next() * 20,
     })),
     icon: "users",
   };
@@ -212,7 +212,7 @@ export function calculateTeacherWorkloadKPI(teachers: Teacher[]): KPICard {
     status: overloadedTeachers === 0 ? "healthy" : overloadedTeachers <= 2 ? "moderate" : "attention",
     sparklineData: Array.from({ length: 7 }, (_, i) => ({
       x: i,
-      y: 4 + Math.random() * 4,
+      y: 4 + getSeededRandom().next() * 4,
     })),
     icon: "briefcase",
   };
@@ -318,8 +318,8 @@ export function generateLiveActivityEvent(): ActivityEvent {
     { type: "ptm" as const, title: "PTM Scheduled", descriptions: ["PTA meeting confirmed for Class 10", "Parent-teacher conference for Class 6-A"] },
   ];
 
-  const selected = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-  const description = selected.descriptions[Math.floor(Math.random() * selected.descriptions.length)];
+  const selected = eventTypes[Math.floor(getSeededRandom().next() * eventTypes.length)];
+  const description = selected.descriptions[Math.floor(getSeededRandom().next() * selected.descriptions.length)];
 
   return {
     id: `event-${Date.now()}`,

@@ -130,6 +130,11 @@ export function PrincipalDashboard() {
     return calculateRiskMetrics(data.students, data.teachers);
   }, [data.students, data.teachers]);
 
+  // Live summary numbers for quick glance
+  const presentCount = useMemo(() => data.students.filter((s) => s.attendance >= 75).length, [data.students]);
+  const absentCount = useMemo(() => data.students.filter((s) => s.attendance < 75).length, [data.students]);
+  const chronicCount = useMemo(() => data.students.filter((s) => s.isChronicAbsentee).length, [data.students]);
+
   // Activity feed state with real-time simulation
   const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>(data.activityEvents);
 
@@ -275,9 +280,32 @@ export function PrincipalDashboard() {
 
           {/* Main Content Grid: Activity Feed + Analytics + AI Insights */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Left Column: Live Activity Feed */}
+            {/* Left Column: Live Activity Feed + Quick Summary */}
             <div className="lg:col-span-1">
-              <LiveActivityFeed events={activityEvents} />
+              <div className="space-y-4">
+                <Card className="p-4">
+                  <h4 className="font-semibold text-sm mb-2">Live Summary</h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground">Present</div>
+                      <div className="text-lg font-bold text-emerald-600">{presentCount}</div>
+                      <div className="text-xs text-muted-foreground">{Math.round((presentCount / data.students.length) * 100)}%</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground">Absent</div>
+                      <div className="text-lg font-bold text-red-600">{absentCount}</div>
+                      <div className="text-xs text-muted-foreground">{Math.round((absentCount / data.students.length) * 100)}%</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground">Chronic</div>
+                      <div className="text-lg font-bold text-amber-600">{chronicCount}</div>
+                      <div className="text-xs text-muted-foreground">{Math.round((chronicCount / data.students.length) * 100)}%</div>
+                    </div>
+                  </div>
+                </Card>
+
+                <LiveActivityFeed events={activityEvents} />
+              </div>
             </div>
 
             {/* Middle Column: Analytics Charts */}
