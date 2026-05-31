@@ -34,10 +34,11 @@ const NAV: Record<Role, NavItem[]> = {
   principal: [
     { to: "/app", label: "Dashboard", icon: Home },
     { to: "/app/schedule", label: "Operations", icon: CalendarClock },
+    { to: "/app/admissions", label: "Admissions", icon: FileText },
     { to: "/app/students", label: "Students", icon: Users },
     { to: "/app/teachers", label: "Teachers", icon: Briefcase },
-    { to: "/app/academics", label: "Academic Overview", icon: BookOpen },
-    { to: "/app/fees", label: "Fee Reports", icon: DollarSign },
+    { to: "/app/academics", label: "Academics", icon: BookOpen },
+    { to: "/app/fees", label: "Finance", icon: DollarSign },
     { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
     { to: "/app/announcements", label: "Announcements", icon: Megaphone },
     { to: "/app/settings", label: "Settings", icon: Settings },

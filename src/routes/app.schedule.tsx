@@ -10,9 +10,7 @@ import {
   UserCheck,
   UserX,
   ClipboardList,
-  AlertTriangle,
   AlertCircle,
-  CheckCircle2,
   FileText,
   Printer,
   CalendarPlus,
@@ -294,6 +292,54 @@ const teacherAvailability = [
   },
 ];
 
+const teacherStats: Record<string, { day: string; proxiesServed: number; freePeriods: number }[]> = {
+  "Mrs Sharma": [
+    { day: "Mon", proxiesServed: 2, freePeriods: 4 },
+    { day: "Tue", proxiesServed: 1, freePeriods: 4 },
+    { day: "Wed", proxiesServed: 3, freePeriods: 3 },
+    { day: "Thu", proxiesServed: 2, freePeriods: 4 },
+    { day: "Fri", proxiesServed: 4, freePeriods: 2 },
+    { day: "Sat", proxiesServed: 0, freePeriods: 4 },
+    { day: "Sun", proxiesServed: 1, freePeriods: 4 },
+  ],
+  "Mr Khan": [
+    { day: "Mon", proxiesServed: 1, freePeriods: 5 },
+    { day: "Tue", proxiesServed: 2, freePeriods: 5 },
+    { day: "Wed", proxiesServed: 1, freePeriods: 5 },
+    { day: "Thu", proxiesServed: 3, freePeriods: 4 },
+    { day: "Fri", proxiesServed: 2, freePeriods: 5 },
+    { day: "Sat", proxiesServed: 0, freePeriods: 5 },
+    { day: "Sun", proxiesServed: 0, freePeriods: 5 },
+  ],
+  "Mrs Patel": [
+    { day: "Mon", proxiesServed: 3, freePeriods: 4 },
+    { day: "Tue", proxiesServed: 2, freePeriods: 4 },
+    { day: "Wed", proxiesServed: 2, freePeriods: 4 },
+    { day: "Thu", proxiesServed: 1, freePeriods: 4 },
+    { day: "Fri", proxiesServed: 3, freePeriods: 4 },
+    { day: "Sat", proxiesServed: 0, freePeriods: 4 },
+    { day: "Sun", proxiesServed: 1, freePeriods: 4 },
+  ],
+  "Mr Verma": [
+    { day: "Mon", proxiesServed: 2, freePeriods: 4 },
+    { day: "Tue", proxiesServed: 3, freePeriods: 3 },
+    { day: "Wed", proxiesServed: 1, freePeriods: 4 },
+    { day: "Thu", proxiesServed: 2, freePeriods: 4 },
+    { day: "Fri", proxiesServed: 4, freePeriods: 2 },
+    { day: "Sat", proxiesServed: 0, freePeriods: 4 },
+    { day: "Sun", proxiesServed: 2, freePeriods: 4 },
+  ],
+  "Mrs Singh": [
+    { day: "Mon", proxiesServed: 4, freePeriods: 5 },
+    { day: "Tue", proxiesServed: 3, freePeriods: 5 },
+    { day: "Wed", proxiesServed: 5, freePeriods: 4 },
+    { day: "Thu", proxiesServed: 2, freePeriods: 5 },
+    { day: "Fri", proxiesServed: 3, freePeriods: 5 },
+    { day: "Sat", proxiesServed: 1, freePeriods: 5 },
+    { day: "Sun", proxiesServed: 2, freePeriods: 5 },
+  ],
+};
+
 const substituteAssignments = [
   {
     teacher: "Mrs Sharma",
@@ -374,22 +420,9 @@ const classSchedules = [
 ];
 
 const eventsToday = [
-  { title: "Morning Assembly", time: "08:15 AM", location: "Main Ground", owner: "Mrs Joseph" },
-  { title: "Science Exhibition", time: "12:30 PM", location: "Auditorium", owner: "Mr Roy" },
-  { title: "PTM", time: "02:00 PM", location: "Hall B", owner: "Mrs Patel" },
-];
-
-const operationalAlerts = [
-  { level: "critical", message: "1 class has no teacher assigned for Period 5." },
-  { level: "warning", message: "2 substitute assignments pending confirmation." },
-  { level: "warning", message: "3 teachers absent today." },
-  { level: "healthy", message: "Exam room allocation completed for Class 10." },
-];
-
-const aiInsights = [
-  "All periods are covered except Class 9B Period 5.",
-  "Teacher availability is sufficient for remaining substitute requirements.",
-  "Mathematics department has the highest teacher utilization today.",
+  { title: "Morning Assembly", time: "08:15 AM", location: "Main Ground", owner: "Mrs Joseph", status: "completed" },
+  { title: "Science Exhibition", time: "12:30 PM", location: "Auditorium", owner: "Mr Roy", status: "running" },
+  { title: "PTM", time: "02:00 PM", location: "Hall B", owner: "Mrs Patel", status: "pending" },
 ];
 
 const examsToday = [
@@ -410,12 +443,22 @@ function OperationsSchedulePage() {
   const currentPeriodIndex = 4;
   const currentPeriod = periodSummaries[currentPeriodIndex];
   const [selectedClassName, setSelectedClassName] = useState<string>(classSchedules[0]?.className ?? "");
+  const [selectedTeacherIndex, setSelectedTeacherIndex] = useState<number>(0);
 
   const availableTeachers = teacherAvailability.filter((teacher) => teacher.free.includes(currentPeriod.id));
   const selectedClass = classSchedules.find((cls) => cls.className === selectedClassName) || null;
+  const selectedTeacher = teacherAvailability[selectedTeacherIndex];
   const totalTeachers = 18;
   const teachersAbsent = 2;
   const teachersPresent = totalTeachers - teachersAbsent;
+
+  const handlePreviousTeacher = () => {
+    setSelectedTeacherIndex((prev) => (prev === 0 ? teacherAvailability.length - 1 : prev - 1));
+  };
+
+  const handleNextTeacher = () => {
+    setSelectedTeacherIndex((prev) => (prev === teacherAvailability.length - 1 ? 0 : prev + 1));
+  };
 
   return (
     <div>
@@ -545,32 +588,111 @@ function OperationsSchedulePage() {
               </div>
               <Badge variant="secondary">Current period {currentPeriod.label}</Badge>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {teacherAvailability.map((teacher) => (
-                <Card key={teacher.name} className="p-4">
+            
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Select teacher</span>
+                <select
+                  className="h-9 rounded-md border border-border bg-background px-3 text-sm"
+                  value={selectedTeacherIndex}
+                  onChange={(event) => setSelectedTeacherIndex(Number(event.target.value))}
+                >
+                  {teacherAvailability.map((teacher, index) => (
+                    <option key={teacher.name} value={index}>
+                      {teacher.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handlePreviousTeacher}
+                >
+                  ← Previous
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleNextTeacher}
+                >
+                  Next →
+                </Button>
+              </div>
+            </div>
+
+            {selectedTeacher && (
+              <>
+                <Card className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-semibold">{teacher.name}</p>
-                      <p className="text-xs text-muted-foreground">{teacher.department}</p>
+                      <p className="font-semibold">{selectedTeacher.name}</p>
+                      <p className="text-xs text-muted-foreground">{selectedTeacher.department}</p>
                     </div>
-                    <Badge variant={teacher.status === "Available" ? "secondary" : "outline"}>{teacher.status}</Badge>
+                    <Badge variant={selectedTeacher.status === "Available" ? "secondary" : "outline"}>{selectedTeacher.status}</Badge>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((period) => (
                       <span
                         key={period}
-                        className={`px-2 py-1 rounded-full text-[11px] ${teacher.assigned.includes(period) ? "bg-emerald-100 text-emerald-700" : "bg-muted text-muted-foreground"}`}
+                        className={`px-2 py-1 rounded-full text-[11px] ${selectedTeacher.assigned.includes(period) ? "bg-emerald-100 text-emerald-700" : "bg-muted text-muted-foreground"}`}
                       >
-                        P{period} {teacher.assigned.includes(period) ? "✓" : "FREE"}
+                        P{period} {selectedTeacher.assigned.includes(period) ? "✓" : "FREE"}
                       </span>
                     ))}
                   </div>
                   <div className="mt-3 text-xs text-muted-foreground">
-                    Free periods: {teacher.free.join(", ")}
+                    Free periods: {selectedTeacher.free.join(", ")}
                   </div>
                 </Card>
-              ))}
-            </div>
+                
+                <Card className="p-4 mt-4">
+                  <h4 className="font-semibold mb-4">Performance - Last 7 Days</h4>
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-medium">Proxies Served</p>
+                        <p className="text-xs text-muted-foreground">by day</p>
+                      </div>
+                      <div className="flex items-end justify-between gap-2 h-24">
+                        {teacherStats[selectedTeacher.name]?.map((stat) => {
+                          const maxProxies = Math.max(...teacherStats[selectedTeacher.name].map(s => s.proxiesServed)) || 5;
+                          const heightPercent = (stat.proxiesServed / maxProxies) * 100;
+                          return (
+                            <div key={stat.day} className="flex-1 flex flex-col items-center gap-1">
+                              <div className="w-full bg-blue-200 rounded-t-md hover:bg-blue-300 transition-colors" style={{ height: `${heightPercent || 10}%`, minHeight: "4px" }} title={`${stat.proxiesServed} proxies`} />
+                              <p className="text-xs font-medium text-muted-foreground">{stat.day}</p>
+                              <p className="text-[10px] font-semibold text-blue-600">{stat.proxiesServed}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-medium">Free Periods</p>
+                        <p className="text-xs text-muted-foreground">by day</p>
+                      </div>
+                      <div className="flex items-end justify-between gap-2 h-24">
+                        {teacherStats[selectedTeacher.name]?.map((stat) => {
+                          const maxFree = Math.max(...teacherStats[selectedTeacher.name].map(s => s.freePeriods)) || 5;
+                          const heightPercent = (stat.freePeriods / maxFree) * 100;
+                          return (
+                            <div key={stat.day} className="flex-1 flex flex-col items-center gap-1">
+                              <div className="w-full bg-emerald-200 rounded-t-md hover:bg-emerald-300 transition-colors" style={{ height: `${heightPercent || 10}%`, minHeight: "4px" }} title={`${stat.freePeriods} free periods`} />
+                              <p className="text-xs font-medium text-muted-foreground">{stat.day}</p>
+                              <p className="text-[10px] font-semibold text-emerald-600">{stat.freePeriods}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </>
+            )}
           </Card>
           <div className="space-y-4">
             <Card className="p-4">
@@ -615,52 +737,27 @@ function OperationsSchedulePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-          <div className="space-y-4 xl:col-span-1">
-            <Card className="p-4">
-              <h4 className="font-semibold mb-3">School Events Today</h4>
-              <div className="space-y-2">
-                {eventsToday.map((event) => (
-                  <div key={event.title} className="border border-border rounded-lg p-3">
-                    <div className="flex items-center justify-between">
-                      <p className="font-medium">{event.title}</p>
-                      <Badge variant="outline">{event.time}</Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{event.location} • {event.owner}</p>
+        <Card className="p-4">
+          <h4 className="font-semibold mb-3">School Events Today</h4>
+          <div className="space-y-2">
+            {eventsToday.map((event) => (
+              <div key={event.title} className="border border-border rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{event.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{event.location} • {event.owner}</p>
                   </div>
-                ))}
-              </div>
-            </Card>
-            <Card className="p-4">
-              <h4 className="font-semibold mb-3">Operational Alerts</h4>
-              <div className="space-y-2 text-sm">
-                {operationalAlerts.map((alert) => (
-                  <div key={alert.message} className="flex items-start gap-2">
-                    {alert.level === "critical" ? (
-                      <AlertCircle className="size-4 text-red-500" />
-                    ) : alert.level === "warning" ? (
-                      <AlertTriangle className="size-4 text-amber-500" />
-                    ) : (
-                      <CheckCircle2 className="size-4 text-emerald-500" />
-                    )}
-                    <span className="text-muted-foreground text-xs">{alert.message}</span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{event.time}</Badge>
+                    <Badge variant={event.status === "completed" ? "secondary" : event.status === "running" ? "default" : event.status === "cancelled" ? "destructive" : "outline"}>
+                      {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                    </Badge>
                   </div>
-                ))}
+                </div>
               </div>
-            </Card>
-            <Card className="p-4">
-              <h4 className="font-semibold mb-3">Scholarii AI Insights</h4>
-              <div className="space-y-2 text-xs text-muted-foreground">
-                {aiInsights.map((insight) => (
-                  <div key={insight} className="flex items-start gap-2">
-                    <span className="mt-1 size-1.5 rounded-full bg-amber-500" />
-                    <span>{insight}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
+            ))}
           </div>
-        </div>
+        </Card>
 
         <Card className="p-5">
           <div className="flex items-center justify-between mb-4">

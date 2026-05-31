@@ -50,14 +50,15 @@ function AdmissionsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [classFilter, setClassFilter] = useState<string>("all");
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [selectedCapacityClass, setSelectedCapacityClass] = useState<string>("Grade 1");
 
   const totals = useMemo(() => {
-    const inquiries = 1284;
-    const submitted = applications.filter((a) => a.status !== "New").length + 300; // realistic-looking
-    const confirmed = applications.filter((a) => a.status === "Enrolled" || a.status === "Approved").length || 524;
+    const inquiries = 542;
+    const submitted = applications.filter((a) => a.status !== "New").length + 95; // realistic-looking
+    const confirmed = applications.filter((a) => a.status === "Enrolled" || a.status === "Approved").length || 218;
     const conversion = Math.round((confirmed / Math.max(1, submitted)) * 100);
-    const pending = applications.filter((a) => a.status === "Documents Pending" || a.status === "Under Review").length || 34;
-    const seats = 126;
+    const pending = applications.filter((a) => a.status === "Documents Pending" || a.status === "Under Review").length || 12;
+    const seats = 18;
     return { inquiries, submitted, confirmed, conversion, pending, seats };
   }, [applications]);
 
@@ -81,12 +82,7 @@ function AdmissionsPage() {
     ];
   }, []);
 
-  const insights = [
-    "Grade 1 is nearing full capacity.",
-    "18 applications are waiting for document verification.",
-    "Admission conversion increased by 8% compared to last month.",
-    "Most applications this month are for Grades 1–3.",
-  ];
+
 
   const clearFilters = () => {
     setQuery("");
@@ -142,17 +138,29 @@ function AdmissionsPage() {
         {/* Funnel + Recent Applications */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card className="p-5 lg:col-span-1">
-            <h3 className="text-lg font-semibold mb-3">Admission Funnel</h3>
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <div className="font-medium">1,284 Inquiries</div>
-              <div className="pl-4">↓</div>
-              <div className="font-medium">742 Applications</div>
-              <div className="pl-4">↓</div>
-              <div className="font-medium">601 Documents Verified</div>
-              <div className="pl-4">↓</div>
-              <div className="font-medium">548 Approved</div>
-              <div className="pl-4">↓</div>
-              <div className="font-medium">524 Enrolled</div>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Admission Funnel</h3>
+              <p className="text-xs text-muted-foreground mt-1">Academic Year 2026</p>
+            </div>
+            <div className="space-y-4 text-sm">
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">Inquiries</div>
+                <div className="text-xl font-bold text-blue-600">{totals.inquiries}</div>
+              </div>
+              <div className="h-1 bg-muted rounded-full"></div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">Applications</div>
+                <div className="text-xl font-bold text-green-600">{totals.submitted}</div>
+              </div>
+              <div className="h-1 bg-muted rounded-full"></div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">Enrolled</div>
+                <div className="text-xl font-bold text-emerald-600">{totals.confirmed}</div>
+              </div>
+              <div className="pt-2 border-t border-border">
+                <div className="text-xs text-muted-foreground mb-1">Students Leaving</div>
+                <div className="text-lg font-semibold">28</div>
+              </div>
             </div>
           </Card>
 
@@ -227,41 +235,51 @@ function AdmissionsPage() {
           </div>
         </div>
 
-        {/* Class capacity + Insights */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <Card className="p-4 lg:col-span-2">
-            <h3 className="text-lg font-semibold mb-3">Class Capacity Overview</h3>
-            <div className="space-y-3">
-              {classesOverview.map((c) => {
-                const pct = Math.round((c.filled / c.total) * 100);
-                const seatsLeft = c.total - c.filled;
-                return (
-                  <div key={c.name} className="p-3 border rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-semibold">{c.name}</div>
-                        <div className="text-xs text-muted-foreground">{c.filled} / {c.total} Filled</div>
-                      </div>
-                      <div className="text-sm font-medium">{seatsLeft > 0 ? `${seatsLeft} Seats Left` : "Full"}</div>
-                    </div>
-                    <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
-                      <div style={{ width: `${pct}%` }} className="h-2 bg-emerald-500" />
-                    </div>
+        {/* Class Capacity Overview */}
+        <Card className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Class Capacity Overview</h3>
+            <Select value={selectedCapacityClass} onValueChange={setSelectedCapacityClass}>
+              <SelectTrigger className="w-40"><SelectValue placeholder="Select Class" /></SelectTrigger>
+              <SelectContent>
+                {classesOverview.map((c) => (
+                  <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {classesOverview.filter((c) => c.name === selectedCapacityClass).map((c) => {
+            const pct = Math.round((c.filled / c.total) * 100);
+            const seatsLeft = c.total - c.filled;
+            return (
+              <div key={c.name} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <Card className="p-4 bg-blue-50 border-blue-200">
+                    <p className="text-xs text-muted-foreground">Filled Seats</p>
+                    <p className="text-3xl font-bold text-blue-600 mt-2">{c.filled}</p>
+                  </Card>
+                  <Card className="p-4 bg-emerald-50 border-emerald-200">
+                    <p className="text-xs text-muted-foreground">Total Seats</p>
+                    <p className="text-3xl font-bold text-emerald-600 mt-2">{c.total}</p>
+                  </Card>
+                  <Card className="p-4 bg-amber-50 border-amber-200">
+                    <p className="text-xs text-muted-foreground">Seats Available</p>
+                    <p className="text-3xl font-bold text-amber-600 mt-2">{seatsLeft}</p>
+                  </Card>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Capacity Status</span>
+                    <span className="text-sm font-semibold text-muted-foreground">{pct}%</span>
                   </div>
-                );
-              })}
-            </div>
-          </Card>
-
-          <Card className="p-4">
-            <h3 className="text-lg font-semibold mb-3">Admission Insights</h3>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              {insights.map((ins) => (
-                <div key={ins} className="p-2 border rounded-md">{ins}</div>
-              ))}
-            </div>
-          </Card>
-        </div>
+                  <div className="h-3 bg-muted rounded-full overflow-hidden">
+                    <div style={{ width: `${pct}%` }} className="h-3 bg-gradient-to-r from-blue-500 to-emerald-500" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </Card>
       </div>
 
       <Sheet open={!!selectedApp} onOpenChange={(open) => !open && setSelectedApp(null)}>
@@ -310,5 +328,3 @@ function AdmissionsPage() {
     </div>
   );
 }
-
-export default AdmissionsPage;
